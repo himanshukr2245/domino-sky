@@ -1,40 +1,46 @@
-// e2e/golden-path.spec.ts — if this is red, the core journey is broken (docs/GOLDEN_PATH.md). Runs on a phone and a laptop viewport.
 import { test, expect } from '@playwright/test';
 
-test('golden path: land → learn how it works → submit a validated form → keep a note', async ({ page }) => {
-  // Beat 1 — the promise is visible
+test('golden path: open cockpit, close Mumbai, inspect the cascade, reset', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'HK Starter' })).toBeVisible();
-
-  // Beat 2 — one tap to the explanation (soft navigation)
-  await page.getByRole('link', { name: /explore work/i }).click();
-  await expect(page).toHaveURL(/\/about$/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Architecture & Quality Gates' })).toBeVisible();
-
-  // Beat 3 — the server validates and answers in plain words
-  const name = page.getByLabel('Your name');
-  await page.getByRole('button', { name: 'Say hello' }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'Please enter your name.' })).toBeVisible();
-  await name.fill('Asha');
-  await page.getByRole('button', { name: 'Say hello' }).click();
-  await expect(page.getByText('Hello, Asha. Validated on the server.')).toBeVisible();
-
-  // #if offline
-  // Beat 4 — the demo feature keeps what you write (on this device)
-  await page.getByRole('link', { name: 'Notes' }).click();
-  await expect(page.getByText('No notes yet. Write your first one above.')).toBeVisible();
-  await page.getByLabel('New note').fill('My first note');
-  await page.getByRole('button', { name: 'Add note' }).click();
-  await page.reload();
-  await expect(page.getByRole('list', { name: 'Your notes' })).toContainText('My first note');
-  // #endif
+  await expect(page.getByRole('heading', { level: 1, name: 'Domino Sky' })).toBeVisible();
+  await expect(page.locator('[data-app-hydrated="true"]')).toBeVisible();
+  await page.getByRole('link', { name: 'Open cockpit', exact: true }).click();
+  await expect(page).toHaveURL(/\/app$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Operations cockpit' })).toBeVisible();
+  await expect(page.getByTestId('delayed-flights')).toHaveText('0');
+  await page.getByRole('button', { name: 'Run disruption', exact: true }).click();
+  await expect(page.getByTestId('scenario-status')).toContainText('BOM closed 14:30–16:00 IST');
+  await expect(page.getByTestId('delayed-flights')).not.toHaveText('0');
+  await page.getByRole('button', { name: /^Inspect DS0303,/ }).click();
+  await expect(page.getByRole('heading', { name: /DS0303/ })).toBeVisible();
+  await expect(page.getByText('Aircraft arriving late from DS0302; minimum turnaround still required.')).toBeVisible();
+  await expect(page.getByText('605 / 600 min duty', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Reset to baseline' }).click();
+  await expect(page.getByTestId('delayed-flights')).toHaveText('0');
+  await expect(page.getByTestId('crew-breaches')).toHaveText('0');
 });
 
-test('health: liveness and readiness answer for monitors', async ({ request }) => {
+test('changing inputs preserves the last computed result until rerun', async ({ page }) => {
+  await page.goto('/app');
+  await expect(page.locator('[data-app-hydrated="true"]')).toBeVisible();
+  await page.getByRole('button', { name: 'Run disruption', exact: true }).click();
+  await page.getByLabel('Airport', { exact: true }).selectOption('DEL');
+  await expect(page.getByTestId('scenario-status')).toContainText('Inputs changed');
+  await expect(page.getByTestId('scenario-status')).toContainText('BOM closed');
+  await page.getByRole('button', { name: 'Run disruption', exact: true }).click();
+  await expect(page.getByTestId('scenario-status')).toContainText('DEL closed');
+});
+
+test('phone and laptop have no horizontal page overflow', async ({ page }) => {
+  await page.goto('/app');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
+test('health: liveness and readiness report the actual network', async ({ request }) => {
   const live = await request.get('/api/health');
   expect(live.status()).toBe(200);
   expect(await live.json()).toMatchObject({ status: 'ok' });
   const ready = await request.get('/api/health?deep=1');
-  expect(ready.status()).toBe(200);                                // no Supabase configured → "skipped", never degraded
-  expect((await ready.json()).checks).toBeDefined();
+  expect(ready.status()).toBe(200);
+  expect((await ready.json()).checks).toMatchObject({ network: 'ok', flights: 70 });
 });

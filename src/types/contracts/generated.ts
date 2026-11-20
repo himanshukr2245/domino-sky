@@ -3,6 +3,153 @@
 // Source: contracts/*.json · Run 'npm run codegen' to regenerate
 // ----------------------------------------------------------------------------
 
+/** A supplied airport; hourly capacity is informational in Phase 1. */
+export interface Airport {
+  id: string;
+  name: string;
+  city: string;
+  lat: number;
+  lng: number;
+  tier: string;
+  capacityPerHour: number;
+}
+
+/** A supplied flight normalized to IST minutes from midnight. */
+export interface ScheduledFlight {
+  id: string;
+  tailId: string;
+  legOrder: number;
+  origin: string;
+  destination: string;
+  departure: number;
+  arrival: number;
+  blockMinutes: number;
+  pax: number;
+  scheduledTurnaround?: number;
+}
+
+/** A supplied passenger connection group, not unique traveler identities. */
+export interface PassengerConnection {
+  id: string;
+  airport: string;
+  fromFlight: string;
+  toFlight: string;
+  passengers: number;
+  minConnectMinutes: number;
+}
+
+/** The supplied crew group with fixed duty start and assigned flights. */
+export interface CrewRoster {
+  id: string;
+  tailId: string;
+  base: string;
+  dutyStart: number;
+  maxDutyMinutes: number;
+  flightIds: string[];
+}
+
+/** A spare is only available at its supplied location and time. */
+export interface SpareAircraft {
+  tailId: string;
+  base: string;
+  availableFrom: number;
+  seats: number;
+}
+
+/** Normalized immutable input to the deterministic engine. */
+export interface FlightNetwork {
+  minTurnaroundMinutes: number;
+  seatsPerAircraft: number;
+  airports: Airport[];
+  flights: ScheduledFlight[];
+  connections: PassengerConnection[];
+  crews: CrewRoster[];
+  spares: SpareAircraft[];
+}
+
+/** A half-open closure interval [start,end), expressed in IST minutes. */
+export interface AirportClosure {
+  airport: string;
+  start: number;
+  end: number;
+}
+
+/** Incremental binding delay cause; minutes sum to departure delay. */
+export interface DelayCause {
+  kind: 'late-aircraft' | 'origin-closure' | 'destination-closure';
+  minutes: number;
+  relatedFlightId?: string;
+  airport?: string;
+}
+
+export type DelayCauseKind = 'late-aircraft' | 'origin-closure' | 'destination-closure';
+
+/** Actual times are projections; crew breaches are not dispatch authorization. */
+export interface FlightProjection {
+  id: string;
+  tailId: string;
+  legOrder: number;
+  origin: string;
+  destination: string;
+  scheduledDeparture: number;
+  scheduledArrival: number;
+  actualDeparture: number;
+  actualArrival: number;
+  departureDelay: number;
+  arrivalDelay: number;
+  pax: number;
+  previousFlightId?: string;
+  causes: DelayCause[];
+}
+
+/** Calculated group outcome from actual inbound/outbound times. */
+export interface ConnectionProjection {
+  id: string;
+  airport: string;
+  fromFlight: string;
+  toFlight: string;
+  passengers: number;
+  minimumMinutes: number;
+  availableMinutes: number;
+  shortfallMinutes: number;
+  missed: boolean;
+}
+
+/** Projected duty through final assigned arrival. */
+export interface CrewProjection {
+  id: string;
+  tailId: string;
+  dutyStart: number;
+  dutyEnd: number;
+  dutyMinutes: number;
+  limitMinutes: number;
+  excessMinutes: number;
+  slackMinutes: number;
+  flightIds: string[];
+}
+
+/** Flight boardings and connection group counts are deliberately separate. */
+export interface SimulationMetrics {
+  totalFlights: number;
+  delayedFlights: number;
+  totalArrivalDelay: number;
+  maxArrivalDelay: number;
+  delayedBoardings: number;
+  passengerDelayMinutes: number;
+  missedConnections: number;
+  missedConnectionPassengers: number;
+  crewBreaches: number;
+}
+
+/** A reproducible engine result, no clock or randomness involved. */
+export interface SimulationResult {
+  closure?: AirportClosure;
+  flights: FlightProjection[];
+  connections: ConnectionProjection[];
+  crews: CrewProjection[];
+  metrics: SimulationMetrics;
+}
+
 /** Cross-platform system alert model shared between Web and Android */
 export interface SystemAlert {
   id: string;

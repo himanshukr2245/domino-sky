@@ -8,14 +8,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# AGENTS.md — HK Starter project brain
+# AGENTS.md — Domino Sky project brain
 > Loaded every session (Claude Code reads it through CLAUDE.md). If this file and any other doc disagree, STOP and ask the human.
 > House standard: `2-Plans/universal/00_START_HERE.md` in the workspace (HK Universal Library v3) — its 13 laws override everything here. Load only the library sections the AI load map names for the task.
 
 ## Mission
-The pre-wired template every new app starts from: "Use this template → `npm run hk:init` → push → connect Workers Builds", live in ~15 minutes, already passing the gate ladder.
-Kind: PRODUCT (a template) · Security level: Real · Offline claimed: only when the `offline` module is on · `/hk-admin`: not pre-wired (add per app via SEC-12).
-Live proof: https://starter.hkr.dpdns.org · Status: `docs/STATUS.md`.
+Domino Sky: help an operations controller simulate an airport closure, trace flight/passenger/crew consequences, and compare a validated recovery.
+Kind: EVENT · Mode: SPRINT · Modules: core only · Data: supplied synthetic network · Offline: not claimed · Admin: omitted.
+Live: not deployed or verified. User selected Gemini API and existing Cloudflare hosting. Follow `docs/IMPLEMENTATION_PLAN.md` one phase at a time; status and actual gate evidence live in `docs/STATUS.md`.
 
 ## Stack (pinned — do not upgrade without asking)
 next 16.3.8 (security floor 16.3.8) · react 19.2 · @opennextjs/cloudflare 1.20.8 · wrangler 4 · tailwindcss 4 (`@theme` tokens in `src/app/globals.css`, no config file) · zod 4 · @supabase/ssr + supabase-js (auth module) · idb (offline module) · vitest 5 · @playwright/test + @axe-core/playwright
@@ -81,7 +81,7 @@ When building or extending apps in the workspace, apply the pre-decided archetyp
 - ⚠️ Font licence: TeroxiaDemo (public/fonts) is PERSONAL-USE only. Buy a licence or replace the file + `--font-teroxia` before any commercial or client use.
 
 ## Traps already learned (do not re-learn them)
-- **"Still failing" may be an old build:** after a push, prove it with `npm run check:live -- https://starter.hkr.dpdns.org --expect-head` — it passes only when the live site runs your current commit, and says if it is unpushed or still building.
+- **"Still failing" may be an old build:** after a push, prove it with `npm run check:live -- https://domino-sky.example.com --expect-head` — it passes only when the live site runs your current commit, and says if it is unpushed or still building.
 - **OpenNext needs `esbuild` declared** (it imports it without listing it): keep `esbuild` in devDependencies or Workers Builds fails with "Cannot find package 'esbuild'". `check-opennext` enforces it.
 - **A lockfile dry-run is not a build:** before trusting a deploy fix, run the real `npx opennextjs-cloudflare build` (and `npx wrangler deploy --dry-run` for the size) — locally only as a check, never to deploy.
 - **Lockfile vs Cloudflare's npm:** Workers Builds runs `npm ci` with npm 10.9.2; a lock written by npm 11 can fail there ("Missing: … from lock file"). After any dependency change run `npm run lock`; the pre-commit hook blocks an incompatible lockfile.

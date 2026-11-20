@@ -42,7 +42,7 @@ const appName = args.find((a) => !a.startsWith('--'));
 
 if (!appName) {
   console.log(`
-⚡ HK Starter Genesis Engine v5.0
+⚡ Domino Sky Genesis Engine v5.0
 
 Usage:
   node scripts/genesis.mjs "App Name" [options]

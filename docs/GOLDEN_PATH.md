@@ -1,12 +1,7 @@
-# GOLDEN PATH — the core journey (BLD-3)
-The starter is a template, so its golden path is the journey that proves the template works. Every beat is covered by `e2e/golden-path.spec.ts` on a phone and a laptop viewport.
+# Domino Sky golden path
 
-| Beat | What the person does | What the screen shows | Proven by |
-|---|---|---|---|
-| 1 | Opens the home page | The promise ("HK Starter") and what every app starts with | golden-path beat 1 · a11y · csp |
-| 2 | Taps "How it works" | The gate ladder, without a page reload | golden-path beat 2 · soft-nav |
-| 3 | Submits the form empty, then with a name | A plain-words error, then a server-validated answer | golden-path beat 3 |
-| 4 | Opens Notes, writes a note, reloads | The note is still there, "saved in this browser on this device" | golden-path beat 4 · notes spec |
-| 5 | (offline module) Goes offline, reloads, adds a note, reloads again; opens a page it never saved | The notes screen opens from the cache, the note survives; the calm offline page offers a way back | offline spec |
-| 5b | (auth + offline) Reconnects | The note syncs once; another device sees it | synced-store unit suite (fake server) · auth spec real-account test (S6) |
-| 6 | (auth module, guest mode until Supabase is set up) Signs up, confirms by email, signs in | Their own notes only | auth spec (S4) + rls-proof |
+Phase 1: open the home page, open the cockpit, run the default BOM 14:30–16:00 IST closure, select DS0303, inspect its inbound-aircraft cause and CR03 duty, then reset to baseline. Covered by `e2e/golden-path.spec.ts` on mobile and desktop viewports.
+
+Additional journeys prove that edited inputs preserve the previous calculation until rerun, that the page fits the viewport, and that health readiness reports the loaded network. CSP, accessibility in both themes, soft navigation, top-loader feedback, and absence of the removed account library retain independent browser checks.
+
+The later-phase golden path adds recovery preview, validated apply, before/after comparison, and undo. Those actions are not claimed complete in Phase 1.

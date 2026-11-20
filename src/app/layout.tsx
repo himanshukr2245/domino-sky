@@ -14,11 +14,6 @@ import { Footer } from '@/components/Footer';
 import { NetworkBanner } from '@/components/NetworkBanner';
 import { ObservabilityListener } from '@/components/ObservabilityListener';
 import { WebVitals } from '@/components/WebVitals';
-import { CommandPalette } from '@/components/CommandPalette';
-import { FpsCounter } from '@/components/ui/FpsCounter';
-// #if offline
-import { ServiceWorkerRegistrar } from '@/modules/offline/pwa/ServiceWorkerRegistrar';
-// #endif
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -62,11 +57,6 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
         <Footer />
         <ObservabilityListener />
         <WebVitals />
-        <CommandPalette />
-        <FpsCounter />
-        {/* #if offline */}
-        <ServiceWorkerRegistrar />
-        {/* #endif */}
       </body>
     </html>
   );

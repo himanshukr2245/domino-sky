@@ -12,7 +12,7 @@ i want to build an fucking-awesome mind-blowing app - that acutally helps the us
 
 also follow The hk-system: universal files + repo template
 location: `2-Plans\universal`:
-repo template: `4-Projects\00-hk-starter`
+repo template: `4-Projects\00-domino-sky`
 
 what do you think? or do you have more and more better fucking-awesome mind-blowing jaw-dropping award-winning amazing idea!?
 so please create/provided me with a fucking-awesome mind-blowing awrad-winning amazing very highly detailed new implementation plan for this!
@@ -38,7 +38,7 @@ so claude - is the sol. app good - or do u have a more & more better fucking pro
 i want to build an fucking-awesome mind-blowing app - that acutally helps the user !!
 also follow The hk-system: universal files + repo template
 location: `2-Plans\universal`:
-repo template: `4-Projects\00-hk-starter`
+repo template: `4-Projects\00-domino-sky`
 
 what do you think? or do you have more and more better fucking-awesome mind-blowing jaw-dropping award-winning amazing idea!?
 
@@ -57,7 +57,7 @@ When creating or spawning a new application from this starter template (e.g., in
 ## 📋 Copy-Paste Prompt for AI Agents
 
 ```markdown
-You are an expert full-stack engineer and design virtuoso building a brand new application from the HK Universal Library v3 template (`00-hk-starter`).
+You are an expert full-stack engineer and design virtuoso building a brand new application from the HK Universal Library v3 template (`00-domino-sky`).
 
 ### 🎯 Mission & App Identity
 - **App Name**: [Insert App Name, e.g. "PausePoint", "AeroLedger", "NeuroFlow"]

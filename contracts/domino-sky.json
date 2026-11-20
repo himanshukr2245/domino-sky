@@ -1,0 +1,529 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DominoSkyContracts",
+  "entities": [
+    {
+      "name": "Airport",
+      "description": "A supplied airport; hourly capacity is informational in Phase 1.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "lat": {
+          "type": "number",
+          "isFloat": true
+        },
+        "lng": {
+          "type": "number",
+          "isFloat": true
+        },
+        "tier": {
+          "type": "string"
+        },
+        "capacityPerHour": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "city",
+        "lat",
+        "lng",
+        "tier",
+        "capacityPerHour"
+      ]
+    },
+    {
+      "name": "ScheduledFlight",
+      "description": "A supplied flight normalized to IST minutes from midnight.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tailId": {
+          "type": "string"
+        },
+        "legOrder": {
+          "type": "integer"
+        },
+        "origin": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "departure": {
+          "type": "integer"
+        },
+        "arrival": {
+          "type": "integer"
+        },
+        "blockMinutes": {
+          "type": "integer"
+        },
+        "pax": {
+          "type": "integer"
+        },
+        "scheduledTurnaround": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "tailId",
+        "legOrder",
+        "origin",
+        "destination",
+        "departure",
+        "arrival",
+        "blockMinutes",
+        "pax"
+      ]
+    },
+    {
+      "name": "PassengerConnection",
+      "description": "A supplied passenger connection group, not unique traveler identities.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "airport": {
+          "type": "string"
+        },
+        "fromFlight": {
+          "type": "string"
+        },
+        "toFlight": {
+          "type": "string"
+        },
+        "passengers": {
+          "type": "integer"
+        },
+        "minConnectMinutes": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "airport",
+        "fromFlight",
+        "toFlight",
+        "passengers",
+        "minConnectMinutes"
+      ]
+    },
+    {
+      "name": "CrewRoster",
+      "description": "The supplied crew group with fixed duty start and assigned flights.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tailId": {
+          "type": "string"
+        },
+        "base": {
+          "type": "string"
+        },
+        "dutyStart": {
+          "type": "integer"
+        },
+        "maxDutyMinutes": {
+          "type": "integer"
+        },
+        "flightIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "tailId",
+        "base",
+        "dutyStart",
+        "maxDutyMinutes",
+        "flightIds"
+      ]
+    },
+    {
+      "name": "SpareAircraft",
+      "description": "A spare is only available at its supplied location and time.",
+      "properties": {
+        "tailId": {
+          "type": "string"
+        },
+        "base": {
+          "type": "string"
+        },
+        "availableFrom": {
+          "type": "integer"
+        },
+        "seats": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "tailId",
+        "base",
+        "availableFrom",
+        "seats"
+      ]
+    },
+    {
+      "name": "FlightNetwork",
+      "description": "Normalized immutable input to the deterministic engine.",
+      "properties": {
+        "minTurnaroundMinutes": {
+          "type": "integer"
+        },
+        "seatsPerAircraft": {
+          "type": "integer"
+        },
+        "airports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "Airport"
+          }
+        },
+        "flights": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "ScheduledFlight"
+          }
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "PassengerConnection"
+          }
+        },
+        "crews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "CrewRoster"
+          }
+        },
+        "spares": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "SpareAircraft"
+          }
+        }
+      },
+      "required": [
+        "minTurnaroundMinutes",
+        "seatsPerAircraft",
+        "airports",
+        "flights",
+        "connections",
+        "crews",
+        "spares"
+      ]
+    },
+    {
+      "name": "AirportClosure",
+      "description": "A half-open closure interval [start,end), expressed in IST minutes.",
+      "properties": {
+        "airport": {
+          "type": "string"
+        },
+        "start": {
+          "type": "integer"
+        },
+        "end": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "airport",
+        "start",
+        "end"
+      ]
+    },
+    {
+      "name": "DelayCause",
+      "description": "Incremental binding delay cause; minutes sum to departure delay.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "late-aircraft",
+            "origin-closure",
+            "destination-closure"
+          ]
+        },
+        "minutes": {
+          "type": "integer"
+        },
+        "relatedFlightId": {
+          "type": "string"
+        },
+        "airport": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "minutes"
+      ]
+    },
+    {
+      "name": "FlightProjection",
+      "description": "Actual times are projections; crew breaches are not dispatch authorization.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tailId": {
+          "type": "string"
+        },
+        "legOrder": {
+          "type": "integer"
+        },
+        "origin": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "scheduledDeparture": {
+          "type": "integer"
+        },
+        "scheduledArrival": {
+          "type": "integer"
+        },
+        "actualDeparture": {
+          "type": "integer"
+        },
+        "actualArrival": {
+          "type": "integer"
+        },
+        "departureDelay": {
+          "type": "integer"
+        },
+        "arrivalDelay": {
+          "type": "integer"
+        },
+        "pax": {
+          "type": "integer"
+        },
+        "previousFlightId": {
+          "type": "string"
+        },
+        "causes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "DelayCause"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "tailId",
+        "legOrder",
+        "origin",
+        "destination",
+        "scheduledDeparture",
+        "scheduledArrival",
+        "actualDeparture",
+        "actualArrival",
+        "departureDelay",
+        "arrivalDelay",
+        "pax",
+        "causes"
+      ]
+    },
+    {
+      "name": "ConnectionProjection",
+      "description": "Calculated group outcome from actual inbound/outbound times.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "airport": {
+          "type": "string"
+        },
+        "fromFlight": {
+          "type": "string"
+        },
+        "toFlight": {
+          "type": "string"
+        },
+        "passengers": {
+          "type": "integer"
+        },
+        "minimumMinutes": {
+          "type": "integer"
+        },
+        "availableMinutes": {
+          "type": "integer"
+        },
+        "shortfallMinutes": {
+          "type": "integer"
+        },
+        "missed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "airport",
+        "fromFlight",
+        "toFlight",
+        "passengers",
+        "minimumMinutes",
+        "availableMinutes",
+        "shortfallMinutes",
+        "missed"
+      ]
+    },
+    {
+      "name": "CrewProjection",
+      "description": "Projected duty through final assigned arrival.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "tailId": {
+          "type": "string"
+        },
+        "dutyStart": {
+          "type": "integer"
+        },
+        "dutyEnd": {
+          "type": "integer"
+        },
+        "dutyMinutes": {
+          "type": "integer"
+        },
+        "limitMinutes": {
+          "type": "integer"
+        },
+        "excessMinutes": {
+          "type": "integer"
+        },
+        "slackMinutes": {
+          "type": "integer"
+        },
+        "flightIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "tailId",
+        "dutyStart",
+        "dutyEnd",
+        "dutyMinutes",
+        "limitMinutes",
+        "excessMinutes",
+        "slackMinutes",
+        "flightIds"
+      ]
+    },
+    {
+      "name": "SimulationMetrics",
+      "description": "Flight boardings and connection group counts are deliberately separate.",
+      "properties": {
+        "totalFlights": {
+          "type": "integer"
+        },
+        "delayedFlights": {
+          "type": "integer"
+        },
+        "totalArrivalDelay": {
+          "type": "integer"
+        },
+        "maxArrivalDelay": {
+          "type": "integer"
+        },
+        "delayedBoardings": {
+          "type": "integer"
+        },
+        "passengerDelayMinutes": {
+          "type": "integer"
+        },
+        "missedConnections": {
+          "type": "integer"
+        },
+        "missedConnectionPassengers": {
+          "type": "integer"
+        },
+        "crewBreaches": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "totalFlights",
+        "delayedFlights",
+        "totalArrivalDelay",
+        "maxArrivalDelay",
+        "delayedBoardings",
+        "passengerDelayMinutes",
+        "missedConnections",
+        "missedConnectionPassengers",
+        "crewBreaches"
+      ]
+    },
+    {
+      "name": "SimulationResult",
+      "description": "A reproducible engine result, no clock or randomness involved.",
+      "properties": {
+        "closure": {
+          "type": "object",
+          "objectName": "AirportClosure"
+        },
+        "flights": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "FlightProjection"
+          }
+        },
+        "connections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "ConnectionProjection"
+          }
+        },
+        "crews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "CrewProjection"
+          }
+        },
+        "metrics": {
+          "type": "object",
+          "objectName": "SimulationMetrics"
+        }
+      },
+      "required": [
+        "flights",
+        "connections",
+        "crews",
+        "metrics"
+      ]
+    }
+  ]
+}
+

@@ -19,13 +19,13 @@ async function watchBar(page: Page) {
 
 async function openHydrated(page: Page, path: string) {
   await page.goto(path);
-  await expect(page.getByTestId('theme-toggle')).toHaveText(/Light|Dark|System/);   // hydrated: a click before this is a full page load
+  await expect(page.locator('[data-app-hydrated="true"]')).toBeVisible();
 }
 
 test('top loader: clicking a <Link> shows the bar, and it goes away when the page has changed', async ({ page }) => {
   await openHydrated(page, '/');
   const seen = await watchBar(page);
-  await page.getByRole('link', { name: /explore work/i }).click();
+  await page.getByRole('link', { name: 'About', exact: true }).click();
   await expect.poll(seen, { message: 'no visible feedback after the click' }).toBe(true);
   await expect(page).toHaveURL(/\/about$/);
   await expect(page.locator(bar)).toBeHidden({ timeout: 5_000 });
@@ -33,7 +33,7 @@ test('top loader: clicking a <Link> shows the bar, and it goes away when the pag
 
 test('top loader: browser Back shows the bar too', async ({ page }) => {
   await openHydrated(page, '/');
-  await page.getByRole('link', { name: /explore work/i }).click();
+  await page.getByRole('link', { name: 'About', exact: true }).click();
   await expect(page).toHaveURL(/\/about$/);
   await expect(page.locator(bar)).toBeHidden({ timeout: 5_000 });
   const seen = await watchBar(page);

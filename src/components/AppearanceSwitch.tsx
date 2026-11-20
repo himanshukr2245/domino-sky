@@ -12,6 +12,15 @@ import {
   serverSnapshot,
 } from '@/lib/preferences';
 import { playHapticTick, unlockAudio } from '@/lib/audio/synthesizer';
+import { useMounted } from '@/lib/use-mounted';
+import { resolveTheme } from '@/lib/theme';
+
+function subscribeSystemTheme(listener: () => void) {
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+  media.addEventListener('change', listener);
+  return () => media.removeEventListener('change', listener);
+}
+const systemThemeSnapshot = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
 
 interface AppearanceSwitchProps {
   className?: string;
@@ -84,11 +93,13 @@ function IconZap({ size = 14, className = '' }: { size?: number; className?: str
 }
 
 export function AppearanceSwitch({ className = '', compact = false }: AppearanceSwitchProps) {
+  const hydrated = useMounted();
   const themeChoice = useSyncExternalStore(subscribePreferences, getThemeChoice, serverSnapshot) ?? 'dark';
   const reduceEffects = useSyncExternalStore(subscribePreferences, getReduceEffects, serverSnapshot) ?? false;
+  const prefersDark = useSyncExternalStore(subscribeSystemTheme, systemThemeSnapshot, () => false);
 
-  const isLight = themeChoice === 'light';
-  const isDark = themeChoice === 'dark' || themeChoice === 'system';
+  const isDark = resolveTheme(themeChoice, prefersDark) === 'dark';
+  const isLight = !isDark;
 
   function handleToggleTheme() {
     unlockAudio();
@@ -106,6 +117,7 @@ export function AppearanceSwitch({ className = '', compact = false }: Appearance
     <div
       role="group"
       aria-label="Appearance and motion controls"
+      data-app-hydrated={hydrated}
       className={`inline-flex items-center gap-1.5 ${className}`}
     >
       {/* ── Sliding Animated Switch [Sun ⇄ Moon] ── */}

@@ -1,35 +1,30 @@
-# STATUS — HK Starter
-Updated: 2026-10-19 · Phase: S7 Contract-First CodeGen + Jetpack Compose Android Architecture
-Live: https://starter.hkr.dpdns.org · Last green tag: s5
+# Domino Sky status
 
-## Done
-- S7 Contract-First CodeGen (2026-10-19): Added `contracts/` directory, `scripts/hk-codegen.mjs`, and `npm run codegen` wired into `check:fast` to synchronize TypeScript interfaces (`src/types/contracts/generated.ts`) and Kotlin `@Serializable` data classes. Defined 100% pure Kotlin + Jetpack Compose Android architectural standard.
-- S0 scaffold: Next 16.3.8 + OpenNext 1.20.8, HK_KIT gates + pre-commit hook, gate ladder, pinned deps, `.nvmrc` 24.
-- S1 core shell: tokens + themes, layout with per-request nonce CSP, Top Loader, network banner, header/footer, error/loading/not-found pages, `/api/health`, `/api/log` + telemetry client, robots/sitemap/OG, unit + e2e tests.
+Updated 2026-11-20. Phase 1: COMPLETE. Next phase: 2. Public deployment: not verified. Gemini: not implemented. No external publication or hackathon submission has been made.
 
-- S2 notes: `NotesStore` contract (one shared test suite every store must pass), IndexedDB device store (one database per person, versioned upgrades, "reload" when a newer tab upgrades, row + sync queue in one transaction, other tabs update live), `/notes` screen with designed loading / empty / error / saving states, golden path beat 4 + notes e2e (phone + laptop).
-- S3 offline shell: hand-written `public/sw.js` (anonymous, redirect-free precache of `/`, `/notes`, `/offline` + their scripts; network-first pages with a 4 s limit → saved page → `/offline`; cache-first hashed files; never `/api`, `/auth`, RSC or non-GET), polite update prompt, installable manifest + icons, `/offline` page, storage persistence after the first note, offline e2e that proves the reload came from the cache.
-- S4 auth + sync: Supabase clients (browser auth calls — per-IP rate limits work), session refresh in the middleware that keeps the nonce and the no-store headers, sign in / create account / forgot / email-link confirm (tap to use) / new password / account (change password, sign out, delete everything), header account button; account store (Server Actions + RLS) and synced store (device first, outbox push compare-and-set, pull by server clock with overlap, tombstones, server-side last write wins, per-person databases, guest notes moved only on request) — both pass the shared store contract; migrations, branded email templates, keep-awake workflow, deep health checks the database. Guest mode until Supabase is configured.
-- S5 hk:init: `npm run hk:init -- --name … --slug … --domain … --modules …` (markers in 8 allow-listed files, variants, manifest, renames incl. database prefix, fresh README/STATUS/DECISIONS, lockfile rewritten with npm 10.9.2, deletes itself); `--check` validates the template; the `template` workflow initialises all 4 combinations and runs `npm run check` on each. Proven locally from fresh clones: all 4 combinations pass types, lint, unit tests, build, check-dynamic and check-rls; `none` also passes the full e2e suite.
+## Implemented in Phase 1
 
-## Live proof (2026-10-07)
-- `check-live --expect-head` clean on https://starter.hkr.dpdns.org; 32/32 e2e tests pass against the live Cloudflare runtime; worker 1.23 MB gzip.
+Fresh core-only HK-based app; generated domain contracts; preserved and validated input network; deterministic airport closure and aircraft propagation; missed connection and projected crew calculations; an app-specific home and /app cockpit; geographic network preview; flight cause inspector; passenger/crew detail; light/dark appearance; model help; honest health/demo-video endpoints.
 
-## Next
-- GitHub: tick Settings → General → **Template repository** so "Use this template" appears.
-- S6 (with you): docs/SUPABASE_SETUP.md → real-account e2e + rls-proof against the live site → v1.0.0. · S5: hk:init + CI matrix · S6: live proof + v1.0.0.
+## Phase 1 verification
 
-## Known bugs
-- The notes e2e suite times out when repeated 3× in parallel on the 8-thread laptop (single full runs pass); measured idle pages at ~60 frames/s, so the cause is not idle animation — investigate in v4 Phase 5 with real numbers.
-- none known (the transient e2e failures of 2026-10-07 were explained and fixed: a test sampling 0.5 s UI, and 4 browsers overloading the laptop — HK ledger F-63, F-64)
+- Pinned dependency install succeeded with physical project node_modules.
+- Domain tests: 71 passed, including the independently calculated Mumbai fixture.
+- Full unit suite: 93 passed in 4 files.
+- npm run check:fast: passed.
+- npm run check: passed, including asset/security/token checks, the unit suite, production Next build, dynamic-page check, and 68 Playwright checks on phone/desktop viewports.
+- Browser coverage includes the actual Mumbai run/inspection/reset, edited-input behavior, viewport overflow, light/dark accessibility, nonce CSP, theme switching, soft navigation, and top-loader feedback.
+- Separate production visual inspection captured .hk/qa/phase1-desktop.png and phase1-mobile.png. Both showed no page errors and no horizontal page overflow. The temporary QA server was stopped.
+- No release, Worker runtime, live deployment, provider request, or real-device accessibility claim has been verified. Browser viewport checks do not replace real-device testing.
 
-## Fixed on 2026-10-07 (from the first deploy attempt)
-- Workers Builds `npm ci` failed: lockfile written by npm 11; Cloudflare uses npm 10.9.2 → regenerated + verify-lock gate.
-- Top Loader never appeared on <Link> clicks or Back → started from onRouterTransitionStart + 300 ms minimum display.
-- Second Workers Builds attempt: `Cannot find package 'esbuild'` (OpenNext imports esbuild without declaring it) → esbuild declared as a devDependency; real OpenNext build verified locally; worker 1.23 MB gzip.
+The check output includes inherited token-check exemptions for the remaining template demonstrations and Next's middleware deprecation notice. Gates were not changed or weakened. Middleware remains per the pinned OpenNext template compatibility policy.
 
-## Simulated (must be labelled in UI + docs)
-- none
+## Remaining phases
 
-## Cut list
-- `/hk-admin` and Android are not pre-wired (per app via SEC-12 / STK-10).
+2: linked geographic/timeline experience, cinematic refinement, responsive and keyboard inspection.
+3: cancellation/spare feasibility, candidate ranking, recovery comparison/apply/undo, Gemini server integration.
+4: template cleanup, release gates, Linux Worker build, public deployment and live verification, real submission links.
+
+## Known limitations
+
+No recovery engine or AI request yet. No airport capacity queue, diversion, ferry, reserve crew, or rebooking model. No unique traveler count. Some inherited demonstration routes/components remain pending cleanup; they are absent from primary navigation. The example.com metadata fallback is a placeholder. No live URL or performance claim has been verified.

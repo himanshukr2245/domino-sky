@@ -1,8 +1,15 @@
-# CLAIMS — every non-FACT statement in the README, UI or pitch
-| ID | Claim | Type (FACT/MEASURED/SOURCED/ASSUMPTION/VISION/NEVER) | Evidence / method | How we say it |
-|---|---|---|---|---|
-| C1 | A new app goes live in about 15 minutes | ASSUMPTION until timed | Time the "Use this template → live" rehearsal in S6 and replace with MEASURED | "About 15 minutes, measured on <date>" |
-| C2 | Every rule has a gate | FACT for the gates listed in docs/FACTS.md | `npm run facts` scorecard | "N HK gates run before every release" (number from FACTS) |
-| C4 | "Your notes work offline" (offline module) | FACT | `e2e/offline.spec.ts` on phone + laptop viewports: reload with no network is served from the service worker cache (`x-hk-offline: 1`), a note saved offline survives a reload | "Opens and saves notes with no internet — tested in Chrome on every phase"; say "verified on" the phones in docs/testing/device-matrix.md, never "works on all devices" |
-| C5 | "Your notes sync to your account" (auth + offline) | ASSUMPTION until S6 | Unit suite against a fake server passes; the real-account e2e test runs against the live project in S6 → then FACT | Only say it after the S6 run is green; until then "syncing is built and tested against a simulated server" |
-| C3 | Unhackable / fully secure | NEVER | — | "Passes a defined security baseline and shows the output" (honesty-ok: this row names a banned claim on purpose) |
+# Domino Sky claims
+
+Updated 2026-11-20. This file replaces the template's product claims.
+
+| Claim | Status | Evidence or limit |
+|---|---|---|
+| Uses supplied synthetic network | FACT | src/data/flight-network.json is copied from the hackathon input; 16 airports, 70 flights, 16 scheduled tails, 2 spares, 21 connection groups, 16 crew groups. |
+| 10,394 flight passenger boardings; 659 summed connection passengers | FACT | Reductions of the supplied input, checked in simulation tests. Neither is a unique-person count. |
+| Deterministic closure and aircraft cascade | TESTED | 71 domain tests passed on 2026-11-20, including all-airport closure invariants and a hand-calculated BOM fixture. |
+| Phase 1 browser and build verification | TESTED | npm run check passed: 93 unit tests, production build, dynamic-page gate, 68 Playwright checks across 390 × 844 and 1440 × 900 viewports. Additional production screenshots had no page errors or horizontal overflow. |
+| Mumbai fixture: DS0302 +25, DS0303 +20, DS0304 +15; CR03 duty 605/600 | TESTED | simulate.test.ts, closure BOM 14:30–16:00 IST, fixed blocks, 30-minute minimum turnaround, before recovery. |
+| Capacity queues, diversions, reserve crew | NOT MODELED | Airport capacity is informational in this phase. |
+| AI recovery and before/after recovery | PLANNED | Later phases. No live Gemini request exists in Phase 1. |
+| Public deployment | UNVERIFIED | No live public URL or Linux Worker build has been verified. |
+| Performance, frame rate, optimal recovery | UNCLAIMED | No measured performance or globally optimal search claim. |

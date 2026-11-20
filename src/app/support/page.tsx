@@ -1,13 +1,4 @@
-import type { Metadata } from 'next';
-import { SupportCenter } from './SupportCenter';
-import { SITE } from '@/lib/site';
-
-export const metadata: Metadata = {
-  title: `Support & Feedback — ${SITE.name}`,
-  description: 'Submit bug reports, request new features, contact the engineering team, and view architectural FAQs.',
-  alternates: { canonical: '/support' },
-};
-
+import { ButtonLink } from '@/components/ui';
 export default function SupportPage() {
-  return <SupportCenter />;
+  return <article className="ds-workspace"><div className="ds-intro"><div><p className="ds-eyebrow">FLIGHT OPERATIONS HELP</p><h1 className="ds-title">Support</h1><p className="ds-intro-copy">Start with a closure. Follow the flight that moves first.</p></div></div><section className="ds-panel p-6"><h2 className="ds-section-title">Try the Mumbai afternoon scenario</h2><ol className="list-decimal pl-6 space-y-3"><li>Open the cockpit and choose Mumbai (BOM).</li><li>Set the closure start to 14:30 IST and duration to 90 minutes, then run the disruption.</li><li>Select DS0302, DS0303, or DS0304 to inspect the aircraft chain and crew CR03.</li><li>Change the airport or window and rerun. Reset to baseline clears the disruption.</li></ol></section><section className="ds-panel p-6"><h2 className="ds-section-title">Reading the results</h2><p>Arrival delay is the sum of flight delay minutes. Missed connections shows passengers in broken connection groups. Crew breaches show projected rosters over their duty limit. These metrics describe different effects and should not be added together.</p></section><div className="flex gap-3 flex-wrap"><ButtonLink href="/app" sound="none">Open cockpit</ButtonLink><ButtonLink href="/about" variant="secondary" sound="none">Read model assumptions</ButtonLink></div></article>;
 }

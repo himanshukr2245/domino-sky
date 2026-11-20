@@ -1,60 +1,33 @@
-# HK Starter
+# Domino Sky
 
-The pre-wired template for every new app: Next.js 16 on Cloudflare Workers (OpenNext), with the HK Universal Library's gates, security defaults and tests already in place.
+See the cascade. Find the recovery. Prove the difference.
 
-- **Live proof:** https://starter.hkr.dpdns.org
-- **House standard:** `2-Plans/universal/00_START_HERE.md` (HK Universal Library v3)
-- **Status:** `docs/STATUS.md`
+A flight disruption simulator for PromptWars 2026, built from the HK starter. Phase 1 implements airport closures, aircraft delay propagation, passenger connection outcomes, projected crew duty, and a responsive cockpit. Recovery comparison and Gemini integration are planned in later phases.
 
-## Start a new app from this template (about 15 minutes)
-1. GitHub → this repository → **Use this template** → Create a new repository (private) → clone it with GitHub Desktop.
-2. In the new folder: `npm install` (also switches on the pre-commit secret scan).
-3. Preview what will change, then do it:
-   - `npm run hk:init -- --name "My App" --slug my-app --domain myapp.example.com --modules auth,offline --dry-run`
-   - the same without `--dry-run` → answer `yes`
-   - add `--brand "#0ea5e9"` to give the app its own colour (light + dark tokens, contrast-checked); hk:init also writes `docs/IDEA.md` (fill it in) and `docs/KICKOFF_PROMPT.md` (paste it to your AI)
-   - `--modules`: `none` (core only) · `auth` (accounts, notes in the account) · `offline` (installable, notes on the device) · `auth,offline` (both, synced)
-4. `npm run check` → commit ("chore: init my-app from hk-starter") → push.
-5. Follow **First deploy** in the new README that hk:init wrote (Cloudflare Workers Builds + your domain); with `auth`, also `docs/SUPABASE_SETUP.md`.
+## Run locally
 
-hk:init renames the app (name, slug, domain, database prefix), removes the modules you did not choose (files, packages, tests, smoke paths), writes a fresh README / STATUS / DECISIONS, rewrites the lockfile with the deploy's npm, and deletes itself — it runs once. The `template` workflow proves all four module combinations initialise and pass `npm run check` on every push.
+Use Node 24. Install the pinned dependencies with `npm ci`, then run `npm run dev`. Open http://127.0.0.1:3000/app. The app requires no account or API key for deterministic simulation.
 
-## Flagship Workspaces in this template
-- **`/studio` — Creative Canvas Studio:** Visual card creator, tool rack, infinite drafting, letterhead exporter.
-- **`/ai` — Minimal AI & Writing Stream:** Hardware VSync-locked streaming typewriter, thought scratchpad, multi-model cognitive selector.
-- **`/editorial` — Editorial & Typography Immersion:** Classical reading immersion, terracotta / parchment / cyber theme, drop-caps, 1-click quote card generator.
+Try BOM, 14:30 IST, duration 90 minutes. Inspect DS0302, DS0303, and DS0304, then crew CR03. Reset returns the complete network to baseline.
 
-## 5 Mandatory Laws When Building a New App from this Template
-1. **App-Dedicated Homepage Law:** When branching into a new app, completely replace `src/app/page.tsx`. The homepage must be a 100% dedicated showcase of YOUR app's mission and interactive hero demo — never keep the starter template's generic marketing copy, AWS precision cards, or manifesto plates.
-2. **Dedicated Working Engine Law:** Adapt `/studio` (or rename to `/workbench`, `/cockpit`) to be the dedicated functional engine for your app's specific workflow.
-3. **Desktop-Responsive Viewport Law:** Never lock desktop content inside narrow column wrappers like `max-w-3xl mx-auto` or `max-w-4xl mx-auto`. Use full container width with responsive gutters (`w-full px-4 sm:px-6 lg:px-8 xl:px-12`) and responsive multi-column desktop grids (e.g. 7-column workbench + 5-column live telemetry).
-4. **Commercial-Safe Typography & Pure SVG Icons:** Zero demo/restricted fonts (no anti-piracy watermarks). Pure SVG vector icons only — zero emojis in UI controls.
-5. **User Simplicity & Serenity Law (LAW-13):** Complexity inside, serenity outside. Build deep heuristic or cryptographic engines under the hood; present an interface of radical simplicity and zero developer jargon. Pass the *Panicked Citizen & Grandmother 2-Second Test*.
+## Project records
 
-## Cross-Platform Standard (HK Universal v3.5)
-- **Web Tier:** Next.js 16 + React 19 + Tailwind CSS v4 on Cloudflare Workers (OpenNext).
-- **Android Tier:** 100% Pure Kotlin + Jetpack Compose (Compose First, API 36+, Material 3).
-- **Shared Brain:** Contract-First CodeGen (`npm run codegen`). Define schemas in `contracts/*.json`; automatically outputs TypeScript types in `src/types/contracts/generated.ts` and Kotlin `@Serializable` data classes.
+- [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
+- [Current status and verification](docs/STATUS.md)
+- [Model decisions](docs/DECISIONS.md)
+- [Supported claims](docs/CLAIMS.md)
+- [Golden path](docs/GOLDEN_PATH.md)
 
-## Daily work (this template)
-1. `npm run dev` — opens http://127.0.0.1:3000.
-2. `npm run codegen` — synchronizes contracts from `contracts/*.json`.
-3. `npm run check:fast` after every change; `npm run check` before you push.
-4. Deploy by `git push` → Cloudflare Workers Builds (build `npx opennextjs-cloudflare build`, deploy `npx wrangler deploy`). Never deploy from Windows.
+## Validation
 
-## The gate ladder
-| Command | When | Checks |
-|---|---|---|
-| `npm run codegen` | after editing `contracts/` | synchronizes TypeScript & Kotlin models |
-| `npm run check:fast` | after every task | codegen + route types + `tsc`, ESLint, secrets, design tokens |
-| `npm run check` | end of every phase | fast + RLS, honesty, assets, unit tests, build, dynamic rendering, end-to-end tests |
-| `npm run check:release` | before a release | check + dependency audit, bundle leaks, route weight, deploy preflight, FACTS |
-| `npm run check:live -- <url> --expect-head` | after every deploy | the live site runs your commit · headers, nonce CSP, health, hidden paths, smoke routes |
+`npm run check:fast` checks generated contracts, types, lint, secrets, tokens, honesty, Git, icons, and toolchain. `npm run check` adds assets, domain/unit tests, production build, dynamic rendering, and Playwright on phone and desktop viewports. `npm run check:release` and live checks remain required before release.
 
-## Modules in this template
-- **offline** — installable app, service worker (pages open with no network), notes in IndexedDB.
-- **auth** — Supabase accounts (sign in, email links from your domain, account page, delete everything). Guest mode until you follow `docs/SUPABASE_SETUP.md`.
-- **both** — notes saved on the device first, then synced to the account (last write wins, enforced in the database).
+## Dataset and assumptions
 
-## Licence
-© 2026 Himanshu Kumar. All rights reserved.
+The supplied synthetic network is preserved in `src/data/flight-network.json`. Times are IST. The engine uses fixed block times, ground holds, and a 30-minute minimum turnaround. Airport movements at reopening are allowed. Connections and crew duty use projected times. Crew breaches describe an infeasible projection. Flight boardings and connection group passengers are separate measures. Airport slot queues, diversions, ferry flights, and reserve crew are not modeled.
+
+## Deployment
+
+Public deployment is not yet verified. Use a public GitHub repository with one branch, `main`, and Linux Cloudflare Workers Builds. Build command: `npx opennextjs-cloudflare build`. Deploy command in Cloudflare: `npx wrangler deploy`. Do not deploy Windows-built Worker output. Set the actual public URL through `NEXT_PUBLIC_SITE_URL`; the example.com fallback is a placeholder only.
+
+Gemini was selected for the later server adviser; no provider API call is implemented in Phase 1. Credentials must remain server secrets. The original brief requires public repository/deployment links and a LinkedIn post; no external post or submission has been made.

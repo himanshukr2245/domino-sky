@@ -8,6 +8,190 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 
 /**
+ * A supplied airport; hourly capacity is informational in Phase 1.
+ */
+@Serializable
+data class Airport(
+    @SerialName("id") val id: String,
+    @SerialName("name") val name: String,
+    @SerialName("city") val city: String,
+    @SerialName("lat") val lat: Double,
+    @SerialName("lng") val lng: Double,
+    @SerialName("tier") val tier: String,
+    @SerialName("capacityPerHour") val capacityPerHour: Long
+)
+
+/**
+ * A supplied flight normalized to IST minutes from midnight.
+ */
+@Serializable
+data class ScheduledFlight(
+    @SerialName("id") val id: String,
+    @SerialName("tailId") val tailId: String,
+    @SerialName("legOrder") val legOrder: Long,
+    @SerialName("origin") val origin: String,
+    @SerialName("destination") val destination: String,
+    @SerialName("departure") val departure: Long,
+    @SerialName("arrival") val arrival: Long,
+    @SerialName("blockMinutes") val blockMinutes: Long,
+    @SerialName("pax") val pax: Long,
+    @SerialName("scheduledTurnaround") val scheduledTurnaround: Long? = null
+)
+
+/**
+ * A supplied passenger connection group, not unique traveler identities.
+ */
+@Serializable
+data class PassengerConnection(
+    @SerialName("id") val id: String,
+    @SerialName("airport") val airport: String,
+    @SerialName("fromFlight") val fromFlight: String,
+    @SerialName("toFlight") val toFlight: String,
+    @SerialName("passengers") val passengers: Long,
+    @SerialName("minConnectMinutes") val minConnectMinutes: Long
+)
+
+/**
+ * The supplied crew group with fixed duty start and assigned flights.
+ */
+@Serializable
+data class CrewRoster(
+    @SerialName("id") val id: String,
+    @SerialName("tailId") val tailId: String,
+    @SerialName("base") val base: String,
+    @SerialName("dutyStart") val dutyStart: Long,
+    @SerialName("maxDutyMinutes") val maxDutyMinutes: Long,
+    @SerialName("flightIds") val flightIds: List<String>
+)
+
+/**
+ * A spare is only available at its supplied location and time.
+ */
+@Serializable
+data class SpareAircraft(
+    @SerialName("tailId") val tailId: String,
+    @SerialName("base") val base: String,
+    @SerialName("availableFrom") val availableFrom: Long,
+    @SerialName("seats") val seats: Long
+)
+
+/**
+ * Normalized immutable input to the deterministic engine.
+ */
+@Serializable
+data class FlightNetwork(
+    @SerialName("minTurnaroundMinutes") val minTurnaroundMinutes: Long,
+    @SerialName("seatsPerAircraft") val seatsPerAircraft: Long,
+    @SerialName("airports") val airports: List<Airport>,
+    @SerialName("flights") val flights: List<ScheduledFlight>,
+    @SerialName("connections") val connections: List<PassengerConnection>,
+    @SerialName("crews") val crews: List<CrewRoster>,
+    @SerialName("spares") val spares: List<SpareAircraft>
+)
+
+/**
+ * A half-open closure interval [start,end), expressed in IST minutes.
+ */
+@Serializable
+data class AirportClosure(
+    @SerialName("airport") val airport: String,
+    @SerialName("start") val start: Long,
+    @SerialName("end") val end: Long
+)
+
+/**
+ * Incremental binding delay cause; minutes sum to departure delay.
+ */
+@Serializable
+data class DelayCause(
+    @SerialName("kind") val kind: String,
+    @SerialName("minutes") val minutes: Long,
+    @SerialName("relatedFlightId") val relatedFlightId: String? = null,
+    @SerialName("airport") val airport: String? = null
+)
+
+/**
+ * Actual times are projections; crew breaches are not dispatch authorization.
+ */
+@Serializable
+data class FlightProjection(
+    @SerialName("id") val id: String,
+    @SerialName("tailId") val tailId: String,
+    @SerialName("legOrder") val legOrder: Long,
+    @SerialName("origin") val origin: String,
+    @SerialName("destination") val destination: String,
+    @SerialName("scheduledDeparture") val scheduledDeparture: Long,
+    @SerialName("scheduledArrival") val scheduledArrival: Long,
+    @SerialName("actualDeparture") val actualDeparture: Long,
+    @SerialName("actualArrival") val actualArrival: Long,
+    @SerialName("departureDelay") val departureDelay: Long,
+    @SerialName("arrivalDelay") val arrivalDelay: Long,
+    @SerialName("pax") val pax: Long,
+    @SerialName("previousFlightId") val previousFlightId: String? = null,
+    @SerialName("causes") val causes: List<DelayCause>
+)
+
+/**
+ * Calculated group outcome from actual inbound/outbound times.
+ */
+@Serializable
+data class ConnectionProjection(
+    @SerialName("id") val id: String,
+    @SerialName("airport") val airport: String,
+    @SerialName("fromFlight") val fromFlight: String,
+    @SerialName("toFlight") val toFlight: String,
+    @SerialName("passengers") val passengers: Long,
+    @SerialName("minimumMinutes") val minimumMinutes: Long,
+    @SerialName("availableMinutes") val availableMinutes: Long,
+    @SerialName("shortfallMinutes") val shortfallMinutes: Long,
+    @SerialName("missed") val missed: Boolean
+)
+
+/**
+ * Projected duty through final assigned arrival.
+ */
+@Serializable
+data class CrewProjection(
+    @SerialName("id") val id: String,
+    @SerialName("tailId") val tailId: String,
+    @SerialName("dutyStart") val dutyStart: Long,
+    @SerialName("dutyEnd") val dutyEnd: Long,
+    @SerialName("dutyMinutes") val dutyMinutes: Long,
+    @SerialName("limitMinutes") val limitMinutes: Long,
+    @SerialName("excessMinutes") val excessMinutes: Long,
+    @SerialName("slackMinutes") val slackMinutes: Long,
+    @SerialName("flightIds") val flightIds: List<String>
+)
+
+/**
+ * Flight boardings and connection group counts are deliberately separate.
+ */
+@Serializable
+data class SimulationMetrics(
+    @SerialName("totalFlights") val totalFlights: Long,
+    @SerialName("delayedFlights") val delayedFlights: Long,
+    @SerialName("totalArrivalDelay") val totalArrivalDelay: Long,
+    @SerialName("maxArrivalDelay") val maxArrivalDelay: Long,
+    @SerialName("delayedBoardings") val delayedBoardings: Long,
+    @SerialName("passengerDelayMinutes") val passengerDelayMinutes: Long,
+    @SerialName("missedConnections") val missedConnections: Long,
+    @SerialName("missedConnectionPassengers") val missedConnectionPassengers: Long,
+    @SerialName("crewBreaches") val crewBreaches: Long
+)
+
+/**
+ * A reproducible engine result, no clock or randomness involved.
+ */
+@Serializable
+data class SimulationResult(
+    @SerialName("closure") val closure: AirportClosure? = null,
+    @SerialName("flights") val flights: List<FlightProjection>,
+    @SerialName("connections") val connections: List<ConnectionProjection>,
+    @SerialName("crews") val crews: List<CrewProjection>,
+    @SerialName("metrics") val metrics: SimulationMetrics
+)
+
+/**
  * Cross-platform system alert model shared between Web and Android
  */
 @Serializable

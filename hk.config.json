@@ -1,7 +1,7 @@
 {
   "app": {
-    "id": "hk-starter",
-    "name": "HK Starter"
+    "id": "domino-sky",
+    "name": "Domino Sky"
   },
   "paths": {
     "src": "src",
@@ -55,12 +55,7 @@
     "smoke": [
       "/",
       "/about",
-      "/design",
-      "/notes",
-      "/login",
-      "/offline",
-      "/manifest.webmanifest",
-      "/sw.js"
+      "/design"
     ],
     "expectNonceCsp": true,
     "supabaseUrl": ""

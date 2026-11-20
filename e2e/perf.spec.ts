@@ -4,7 +4,7 @@ import { test, expect } from '@playwright/test';
 
 test.skip(!!process.env.NEXT_PUBLIC_SUPABASE_URL, 'with accounts on, the header loads the library after the page is interactive');
 
-for (const path of ['/', '/about', '/design']) {
+for (const path of ['/', '/app', '/about', '/design']) {
   test(`perf: ${path} does not download the accounts library`, async ({ page }) => {
     const scripts: string[] = [];
     page.on('response', (r) => { if (r.request().resourceType() === 'script') scripts.push(r.url()); });

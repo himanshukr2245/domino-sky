@@ -12,16 +12,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 const PAGES = [
-  '/', '/about', '/design',
-  // #if auth || offline
-  '/notes',
-  // #endif
-  // #if auth
-  '/login', '/auth/confirm',
-  // #endif
-  // #if offline
-  '/offline',
-  // #endif
+  '/', '/app', '/about', '/support', '/settings', '/design',
   '/this-page-does-not-exist',
 ];
 
@@ -37,11 +28,15 @@ for (const path of PAGES) {
 
 test('csp: the app hydrates — the theme toggle changes the theme', async ({ page }) => {
   await page.goto('/');
-  const lightBtn = page.getByRole('button', { name: /light/i }).first();
-  const darkBtn = page.getByRole('button', { name: /dark/i }).first();
-  await lightBtn.click();
+  await expect(page.locator('[data-app-hydrated="true"]')).toBeVisible();
+  const theme = page.getByRole('switch');
+  const initial = await page.locator('html').getAttribute('data-theme');
+  await theme.click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', initial === 'dark' ? 'light' : 'dark');
+  if (initial === 'dark') await theme.click();
+  await theme.click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
-  await darkBtn.click();
+  await theme.click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   expect(await page.evaluate(() => window.__cspViolations)).toEqual([]);
 });

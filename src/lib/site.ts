@@ -7,17 +7,15 @@ export interface NavItem {
 }
 
 export const SITE = {
-  name: 'HK Starter',
-  shortName: 'HK Starter',
-  description: 'The pre-wired template for every new app — fast, secure, offline-ready, and proven by tests.',
-  url: (process.env.NEXT_PUBLIC_SITE_URL || 'https://starter.hkr.dpdns.org').replace(/\/+$/, ''),
-  slug: 'hk-starter',                                              // storage names, cache names (hk:init rewrites)
+  name: 'Domino Sky',
+  shortName: 'Domino Sky',
+  description: 'See the cascade. Find the recovery. Prove the difference. A flight disruption simulator for PromptWars 2026.',
+  url: (process.env.NEXT_PUBLIC_SITE_URL || 'https://domino-sky.example.com').replace(/\/+$/, ''),
+  slug: 'domino-sky',                                              // storage names, cache names (hk:init rewrites)
   author: 'Himanshu Kumar',
-  track: 'Universal Baseline',
+  track: 'PromptWars 2026',
   nav: [
-    { href: '/', label: 'Home' },
-    { href: '/app', label: 'Workbench' },
-    { href: '/showcase', label: 'Showcase' },
+    { href: '/app', label: 'Cockpit' },
     { href: '/about', label: 'About' },
     { href: '/support', label: 'Support' },
     { href: '/settings', label: 'Settings' },

@@ -76,7 +76,7 @@ const archetype = ARCHETYPES[archetypeArg] || ARCHETYPES['cyber-saas'];
 const slug = folderArg.replace(/^\d+-/, '');
 
 const workspaceRoot = process.cwd();
-const templateDir = resolve(workspaceRoot, '4-Projects', '00-hk-starter');
+const templateDir = resolve(workspaceRoot, '4-Projects', '00-domino-sky');
 const targetDir = resolve(workspaceRoot, '4-Projects', folderArg);
 
 if (!existsSync(templateDir)) {
@@ -94,8 +94,8 @@ console.log(`📐 Archetype: ${archetype.name}`);
 console.log(`🏷️ Track: ${trackArg}`);
 console.log(`🎯 Target Path: ${targetDir}\n`);
 
-// 2. Clean Clone of 00-hk-starter (excluding heavy build & cache directories)
-console.log('📦 Cloning foundational baseline from 00-hk-starter...');
+// 2. Clean Clone of 00-domino-sky (excluding heavy build & cache directories)
+console.log('📦 Cloning foundational baseline from 00-domino-sky...');
 const EXCLUDE_DIRS = new Set(['node_modules', '.next', '.open-next', '.wrangler', '.git', 'coverage', 'test-results', 'playwright-report']);
 
 cpSync(templateDir, targetDir, {
