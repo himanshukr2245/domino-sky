@@ -2,7 +2,7 @@
 
 See the cascade. Find the recovery. Prove the difference.
 
-A flight disruption simulator for PromptWars 2026, built from the HK starter. Phase 1 implements airport closures, aircraft delay propagation, passenger connection outcomes, projected crew duty, and a responsive cockpit. Recovery comparison and Gemini integration are planned in later phases.
+A flight disruption simulator for PromptWars 2026, built from the HK starter. The cockpit models airport closures, aircraft delay propagation, passenger connection outcomes, and projected crew duty. Phase 2 adds linked geographic selection, scheduled/projected aircraft timelines, cause chains, turnaround accounting, search, and airport/status filters. Recovery comparison and Gemini integration are planned in Phase 3.
 
 ## Run locally
 
@@ -10,10 +10,15 @@ Use Node 24. Install the pinned dependencies with `npm ci`, then run `npm run de
 
 Try BOM, 14:30 IST, duration 90 minutes. Inspect DS0302, DS0303, and DS0304, then crew CR03. Reset returns the complete network to baseline.
 
+Select a route or a timeline leg to inspect the same flight across every view. Airport focus filters the view without editing the closure. The timeline starts with affected aircraft and the selected aircraft; choose All aircraft for the complete fleet. The map's View flight details link jumps to the inspector on smaller screens.
+
+For a passenger connection example, choose the Kolkata connection squeeze preset and run it. Open the broken CX14 group's outbound flight, DS0105, and expand Passenger connections in the inspector. The actual projected transfer window explains the missed connection.
+
 ## Project records
 
 - [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
 - [Current status and verification](docs/STATUS.md)
+- [Phase 2 implementation details](docs/plans/PHASE_2.md)
 - [Model decisions](docs/DECISIONS.md)
 - [Supported claims](docs/CLAIMS.md)
 - [Golden path](docs/GOLDEN_PATH.md)

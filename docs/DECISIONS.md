@@ -1,5 +1,14 @@
 # Domino Sky decisions
 
+- 2026-11-20 — Phase 2 completed: full npm run check passed with 101 unit tests and 80 browser checks. Desktop/mobile production screenshots were inspected. Kept the user-requested dev server running and preserved the original simulator, dataset, dependencies and gate scripts. Phase 3 is the next work boundary.
+
+- 2026-11-20 — Phase 2 uses a single selected flight across the map, timeline, manifest and inspector. Airport focus is a separate presentation filter and cannot silently edit the closure. External selection clears conflicting filters.
+- 2026-11-20 — Combined route selection chooses the flight with the largest arrival delay, then departure time and ID. The Mumbai–Ahmedabad route therefore selects DS0405 rather than DS0302 in the supplied afternoon scenario.
+- 2026-11-20 — The timeline's default scope is exactly affected plus selected aircraft, including a single selected rotation at baseline. All aircraft remains an explicit option. This also reduces initial page work while preserving the complete fleet view.
+- 2026-11-20 — Causal inspection follows recorded late-aircraft dependencies and shows scheduled slack, absorbed delay and required turnaround. Pure inspection helpers preserve simulator inputs/results.
+- 2026-11-20 — Maps and timelines use SVG/CSS and native controls with equivalent lists/selectors. No visualization package, external map service, simulated playback or new operational assumption was added.
+- 2026-11-20 — The user explicitly requested a running project; the local development server remains running at 127.0.0.1:3000. Automatic browser handoff was unavailable/blocked by environment policy; project Chromium tests verify the application independently.
+
 - 2026-11-20 — Phase 1 completed: full check passed with 93 unit tests and 68 browser checks; production visual inspection found no page errors or viewport overflow. Phase 2 is the next work boundary; no later-phase feature is claimed complete.
 
 - 2026-11-20 — User approved the Domino Sky cockpit direction and requested a detailed plan followed by phase-by-phase implementation.
