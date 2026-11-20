@@ -31,6 +31,8 @@ jobs:
           WORKERS_CI_COMMIT_SHA: ${{ github.sha }}
       - name: Worker size (Workers free plan limit 3 MB gzip)
         run: npx wrangler deploy --dry-run
+      - name: Exercise the packaged Worker runtime
+        run: node ops/worker-smoke.mjs
 
   gates:
     name: Gate ladder (npm run check)
