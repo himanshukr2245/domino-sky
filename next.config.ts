@@ -1,7 +1,6 @@
 // next.config.ts — Next.js 16 on Cloudflare Workers via OpenNext (HK Universal Library: STK-2, SEC-6).
 // The Content-Security-Policy is NOT set here: src/middleware.ts owns it (a per-request nonce), so the browser sees exactly one policy.
 import type { NextConfig } from 'next';
-import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
 
 // Page security headers (static files get theirs from public/_headers). No CSP here — see the header comment.
 const securityHeaders = [
@@ -39,4 +38,5 @@ const config: NextConfig = {
 
 export default config;
 
-initOpenNextCloudflareForDev();                                    // lets `next dev` use Cloudflare bindings
+// This app uses server fetch/env rather than Worker bindings. Local Next needs no
+// Miniflare/workerd process; OpenNext supplies the production Worker adapter.

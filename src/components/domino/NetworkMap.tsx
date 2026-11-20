@@ -3,6 +3,7 @@
 import { useId, type KeyboardEvent } from 'react';
 import { Button } from '@/components/ui';
 import { Select } from '@/components/ui/Select';
+import { isOperated } from '@/lib/simulation/simulate';
 import { NETWORK } from '@/lib/simulation/network';
 import { routeGroups, routeKey } from '@/lib/simulation/inspect';
 import { formatTime } from '@/lib/simulation/time';
@@ -59,7 +60,7 @@ export function NetworkMap({ flights, closure, selected, airportFocus, onAirport
       </div>
       <div className="ds-map-legend"><span><i className="ds-legend-line" />On time</span><span><i className="ds-legend-line ds-legend-delayed" />Delayed</span><span><i className="ds-legend-line ds-legend-selected" />Selected route</span><span className="ds-map-scroll-hint">Scroll map to explore</span></div>
       <div className="ds-map-selection">
-        <div><span className="ds-eyebrow">SELECTED FLIGHT</span><strong>{selected.id} <span>{selected.origin} / {selected.destination}</span></strong><p>{formatTime(selected.actualDeparture)}–{formatTime(selected.actualArrival)} IST · {selected.tailId}</p><a href="#inspector-heading" className="ds-view-details">View flight details</a></div>
+        <div><span className="ds-eyebrow">SELECTED FLIGHT</span><strong>{selected.id} <span>{selected.origin} / {selected.destination}</span></strong><p>{isOperated(selected) ? formatTime(selected.actualDeparture) + '–' + formatTime(selected.actualArrival) + ' IST' : 'Cancelled'} · {selected.tailId}</p><a href="#inspector-heading" className="ds-view-details">View flight details</a></div>
         <div className="ds-route-flights" aria-label="Flights on selected route">{sameRoute.map(flight => <Button key={flight.id} variant="plain" size="none" sound="none" latencyMode="none" className="ds-route-flight" aria-pressed={flight.id === selected.id} aria-label={`Route flight ${flight.id}`} onClick={() => onSelect(flight.id)}>{flight.id}</Button>)}</div>
       </div>
       <div className="ds-map-focus"><label htmlFor="network-focus">Airport focus</label><Select id="network-focus" value={airportFocus ?? 'all'} onChange={event => onAirportFocus(event.target.value === 'all' ? undefined : event.target.value)}><option value="all">Entire network</option>{NETWORK.airports.map(airport => <option key={airport.id} value={airport.id}>{airport.id} · {airport.city}</option>)}</Select>{airportFocus && <Button variant="quiet" sound="none" className="text-sm" onClick={() => onAirportFocus(undefined)}>Clear focus</Button>}</div>

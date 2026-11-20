@@ -76,15 +76,15 @@ export interface AirportClosure {
 
 /** Incremental binding delay cause; minutes sum to departure delay. */
 export interface DelayCause {
-  kind: 'late-aircraft' | 'origin-closure' | 'destination-closure';
+  kind: 'late-aircraft' | 'origin-closure' | 'destination-closure' | 'recovery-hold' | 'late-crew' | 'spare-availability';
   minutes: number;
   relatedFlightId?: string;
   airport?: string;
 }
 
-export type DelayCauseKind = 'late-aircraft' | 'origin-closure' | 'destination-closure';
+export type DelayCauseKind = 'late-aircraft' | 'origin-closure' | 'destination-closure' | 'recovery-hold' | 'late-crew' | 'spare-availability';
 
-/** Actual times are projections; crew breaches are not dispatch authorization. */
+/** Operated projections have actual times; cancelled flights omit actual times and retain explicit cancellation accounting. */
 export interface FlightProjection {
   id: string;
   tailId: string;
@@ -93,14 +93,21 @@ export interface FlightProjection {
   destination: string;
   scheduledDeparture: number;
   scheduledArrival: number;
-  actualDeparture: number;
-  actualArrival: number;
+  actualDeparture?: number;
+  actualArrival?: number;
   departureDelay: number;
   arrivalDelay: number;
   pax: number;
   previousFlightId?: string;
   causes: DelayCause[];
+  status: 'operated' | 'cancelled';
+  scheduledTailId: string;
+  cancellationReason?: 'requested' | 'aircraft-unavailable' | 'crew-unavailable';
 }
+
+export type FlightProjectionStatus = 'operated' | 'cancelled';
+
+export type FlightProjectionCancellationReason = 'requested' | 'aircraft-unavailable' | 'crew-unavailable';
 
 /** Calculated group outcome from actual inbound/outbound times. */
 export interface ConnectionProjection {
@@ -110,10 +117,13 @@ export interface ConnectionProjection {
   toFlight: string;
   passengers: number;
   minimumMinutes: number;
-  availableMinutes: number;
+  availableMinutes?: number;
   shortfallMinutes: number;
   missed: boolean;
+  reason: 'made' | 'short-transfer' | 'flight-cancelled';
 }
+
+export type ConnectionProjectionReason = 'made' | 'short-transfer' | 'flight-cancelled';
 
 /** Projected duty through final assigned arrival. */
 export interface CrewProjection {
@@ -139,6 +149,9 @@ export interface SimulationMetrics {
   missedConnections: number;
   missedConnectionPassengers: number;
   crewBreaches: number;
+  operatedFlights: number;
+  cancelledFlights: number;
+  cancelledBoardings: number;
 }
 
 /** A reproducible engine result, no clock or randomness involved. */
@@ -148,7 +161,49 @@ export interface SimulationResult {
   connections: ConnectionProjection[];
   crews: CrewProjection[];
   metrics: SimulationMetrics;
+  actions: RecoveryAction[];
+  policy: RecoveryPolicy;
 }
+
+/** A validated cancellation, hold-until, or supplied-spare suffix assignment. */
+export interface RecoveryAction {
+  kind: 'cancel' | 'hold' | 'swap';
+  flightId: string;
+  spareTailId?: string;
+  holdUntilMinute?: number;
+}
+
+export type RecoveryActionKind = 'cancel' | 'hold' | 'swap';
+
+/** Explicit extra assumption for crews changing aircraft. */
+export interface RecoveryPolicy {
+  crewTransferMinutes: number;
+  engineVersion: string;
+}
+
+/** A complete candidate recalculated by the same deterministic engine. */
+export interface RecoveryCandidate {
+  id: string;
+  title: string;
+  actions: RecoveryAction[];
+  result: SimulationResult;
+  feasible: boolean;
+  issues: string[];
+}
+
+/** Only verified candidate IDs and fact references cross the adviser boundary. */
+export interface RecoveryResponse {
+  scenarioKey: string;
+  candidates: RecoveryCandidate[];
+  recommendedId: string;
+  adviserMode: 'gemini' | 'rules';
+  reasonCodes: string[];
+  providerStatus: 'ready' | 'not-configured' | 'unavailable' | 'invalid-output' | 'quota-limited';
+}
+
+export type RecoveryResponseAdviserMode = 'gemini' | 'rules';
+
+export type RecoveryResponseProviderStatus = 'ready' | 'not-configured' | 'unavailable' | 'invalid-output' | 'quota-limited';
 
 /** Cross-platform system alert model shared between Web and Android */
 export interface SystemAlert {

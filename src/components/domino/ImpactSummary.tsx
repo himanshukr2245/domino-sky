@@ -6,6 +6,7 @@ export function ImpactSummary({ metrics }: { metrics: SimulationMetrics }) {
     { label: 'Total arrival delay', value: metrics.totalArrivalDelay, unit: 'flight minutes', id: 'arrival-delay', tone: 'delay' },
     { label: 'Passengers missing connections', value: metrics.missedConnectionPassengers, unit: `${metrics.missedConnections} connection groups`, id: 'missed-passengers', tone: 'passengers' },
     { label: 'Crew duty breaches', value: metrics.crewBreaches, unit: 'projected rosters', id: 'crew-breaches', tone: 'crew' },
+    { label: 'Canceled boardings', value: metrics.cancelledBoardings, unit: `${metrics.cancelledFlights} flights canceled`, id: 'cancelled-boardings', tone: 'crew' },
   ];
   return (
     <section className="ds-metrics" aria-label="Calculated impact across the entire network">

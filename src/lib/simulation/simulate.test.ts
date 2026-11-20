@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import source from '@/data/flight-network.json';
 import type { FlightNetwork } from '@/types/contracts/generated';
 import { NETWORK, readNetwork } from './network';
-import { simulate } from './simulate';
+import { isOperated, simulate } from './simulate';
 import { formatTime, parseTime } from './time';
 
 const at = parseTime;
@@ -63,7 +63,7 @@ describe('input and time contract', () => {
 describe('flight cascade', () => {
   it('keeps the complete baseline on time with no connection failures or duty breaches', () => {
     const result = simulate(NETWORK);
-    expect(result.metrics).toEqual({ totalFlights: 70, delayedFlights: 0, totalArrivalDelay: 0, maxArrivalDelay: 0, delayedBoardings: 0, passengerDelayMinutes: 0, missedConnections: 0, missedConnectionPassengers: 0, crewBreaches: 0 });
+    expect(result.metrics).toEqual({ totalFlights: 70, operatedFlights: 70, cancelledFlights: 0, cancelledBoardings: 0, delayedFlights: 0, totalArrivalDelay: 0, maxArrivalDelay: 0, delayedBoardings: 0, passengerDelayMinutes: 0, missedConnections: 0, missedConnectionPassengers: 0, crewBreaches: 0 });
     expect(result.flights.every(f => f.actualDeparture === f.scheduledDeparture && f.actualArrival === f.scheduledArrival && f.causes.length === 0)).toBe(true);
   });
   it('blocks departure at closure start and allows departure exactly at reopening', () => {
@@ -78,7 +78,7 @@ describe('flight cascade', () => {
   it('permits arrival exactly at reopening', () => expect(simulate(fixture(), { airport: 'BOM', start: 400, end: 420 }).flights[0].arrivalDelay).toBe(0));
   it('matches the independently calculated Mumbai cascade and crew breach', () => {
     const result = simulate(NETWORK, { airport: 'BOM', start: at('14:30'), end: at('16:00') });
-    const tail = result.flights.filter(f => f.tailId === 'VT-DS03');
+    const tail = result.flights.filter(isOperated).filter(f => f.tailId === 'VT-DS03');
     expect(tail.map(f => [f.id, formatTime(f.actualDeparture), formatTime(f.actualArrival), f.arrivalDelay])).toEqual([
       ['DS0301', '12:15', '13:50', 0], ['DS0302', '14:50', '16:00', 25],
       ['DS0303', '16:30', '18:40', 20], ['DS0304', '19:10', '21:35', 15],
@@ -130,11 +130,13 @@ describe('network-wide scenario invariants', () => {
       expect(new Set(result.flights.map(f => f.id)).size).toBe(70);
       const byId = new Map(result.flights.map(f => [f.id, f]));
       for (const f of result.flights) {
+        expect(isOperated(f)).toBe(true);
+        if (!isOperated(f)) throw new Error('A disruption-only projection must operate every flight.');
         expect(f.actualDeparture).toBeGreaterThanOrEqual(f.scheduledDeparture);
         expect(f.actualArrival - f.actualDeparture).toBe(f.scheduledArrival - f.scheduledDeparture);
         expect(f.causes.reduce((sum, c) => sum + c.minutes, 0)).toBe(f.departureDelay);
         for (const [place, time] of [[f.origin, f.actualDeparture], [f.destination, f.actualArrival]] as const) expect(place === airport.id && time >= start && time < end).toBe(false);
-        if (f.previousFlightId) expect(f.actualDeparture).toBeGreaterThanOrEqual(byId.get(f.previousFlightId)!.actualArrival + 30);
+        if (f.previousFlightId) expect(f.actualDeparture).toBeGreaterThanOrEqual(byId.get(f.previousFlightId)!.actualArrival! + 30);
       }
     });
   }

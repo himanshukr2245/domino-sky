@@ -1,4 +1,43 @@
 /* Domino Sky. All colors resolve to the inherited light/dark theme tokens. */
+
+/* Recovery comparisons preserve the disrupted result and expose cancellation cost. */
+.ds-recovery { border-top-color: var(--color-cyan); overflow: hidden; }
+.ds-recovery .ds-list-header { align-items: start; }
+.ds-recovery-layout { display: grid; grid-template-columns: minmax(260px, .7fr) minmax(0, 1.3fr); gap: 1.5rem; padding: 1.25rem; }
+.ds-candidates { display: flex; flex-direction: column; gap: .7rem; min-width: 0; }
+.ds-candidate { display: flex; flex-direction: column; align-items: stretch; gap: .6rem; width: 100%; padding: 1rem; border: 1px solid var(--color-border); border-radius: .6rem; text-align: left; background: var(--color-surface); }
+.ds-candidate[aria-pressed=true] { border-color: var(--color-cyan); background: color-mix(in oklch, var(--color-cyan) 6%, var(--color-surface)); }
+.ds-candidate-top { display: grid; gap: .4rem; font-size: .875rem; }
+.ds-candidate-top > span, .ds-candidate > span:nth-child(2) { color: var(--color-fg-muted); font-size: .75rem; line-height: 1.7; }
+.ds-candidate > small { color: var(--color-cyan-fg); font-size: .75rem; }
+.ds-advice-note { color: var(--color-fg-muted); font-size: .8125rem; line-height: 1.7; min-height: 1rem; }
+.ds-recovery-detail { min-width: 0; }
+.ds-recovery-selected { display: flex; align-items: start; justify-content: space-between; flex-wrap: wrap; gap: .75rem; padding-bottom: 1rem; }
+.ds-recovery-selected h3 { font-size: 1.05rem; font-weight: 600; margin-top: .5rem; }
+.ds-recovery-selected > span { font-size: .8125rem; }
+.ds-comparison-scroll { overflow: auto; }
+.ds-comparison { width: 100%; border-collapse: collapse; font-size: .875rem; }
+.ds-comparison th, .ds-comparison td { padding: .9rem .65rem; text-align: right; border-bottom: 1px solid var(--color-border); }
+.ds-comparison thead th { color: var(--color-fg-muted); font-size: .75rem; font-weight: 500; }
+.ds-comparison th:first-child { text-align: left; }
+.ds-comparison tbody th { font-weight: 500; }
+.ds-comparison td { font-family: var(--font-mono, monospace); }
+.ds-comparison small { display: block; font-size: .75rem; color: var(--color-fg-muted); font-weight: 400; margin-top: .25rem; }
+.ds-recovery-actions { display: grid; gap: .6rem; margin-block: 1.25rem; list-style: decimal; padding-left: 1.25rem; font-size: .875rem; }
+.ds-recovery-issues { color: var(--color-danger); font-size: .875rem; margin-block: 1rem; }
+.ds-recovery-buttons { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; margin-block: 1rem; }
+.ds-receipt { margin-top: 1rem; border-top: 1px solid var(--color-border); color: var(--color-fg-muted); font-size: .8125rem; }
+.ds-receipt summary { cursor: pointer; min-height: 44px; padding-block: .75rem; }
+.ds-receipt p { margin-bottom: .7rem; overflow-wrap: anywhere; }
+.ds-saved { padding: 1.25rem; }
+.ds-saved-list { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+.ds-saved-row { display: grid; align-items: start; gap: .4rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: .5rem; text-align: left; font-size: .875rem; }
+.ds-saved-row > span { color: var(--color-fg-muted); font-size: .75rem; }
+.ds-cancelled-leg { background: var(--color-danger); opacity: .5; height: 3px; border-radius: 0; }
+@media (min-width: 1001px) { .ds-workspace .ds-metrics { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (max-width: 1000px) { .ds-metrics > .ds-metric:last-child:nth-child(odd) { grid-column: 1 / -1; } }
+@media (max-width: 800px) { .ds-recovery-layout { grid-template-columns: 1fr; padding: 1rem; } .ds-comparison { min-width: 430px; } }
+
 .ds-view-details { display: inline-flex; align-items: center; min-height: 44px; color: var(--color-cyan-fg); font-size: .875rem; text-decoration: underline; text-underline-offset: 4px; margin-top: .25rem; }
 .ds-inspector-id { scroll-margin-top: 110px; }
 .ds-header { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 1.5rem; padding: 1rem 2rem; border-bottom: 1px solid var(--color-border); background: var(--color-surface); }

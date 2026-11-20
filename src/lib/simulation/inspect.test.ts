@@ -32,7 +32,7 @@ describe('operational inspection', () => {
     const result = simulate(NETWORK, { airport: 'DEL', start: 360, end: 1800 });
     const range = timelineRange(result.flights);
     expect(range.start).toBeLessThanOrEqual(Math.min(...result.flights.map(flight => flight.scheduledDeparture)));
-    expect(range.end).toBeGreaterThanOrEqual(Math.max(...result.flights.map(flight => flight.actualArrival)));
+    expect(range.end).toBeGreaterThanOrEqual(Math.max(...result.flights.map(flight => flight.actualArrival!)));
     expect(range.end).toBeGreaterThan(1440);
   });
   it('exposes the connection squeeze preset from actual projected times', () => {

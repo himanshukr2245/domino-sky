@@ -10,7 +10,7 @@ export const SITE = {
   name: 'Domino Sky',
   shortName: 'Domino Sky',
   description: 'See the cascade. Find the recovery. Prove the difference. A flight disruption simulator for PromptWars 2026.',
-  url: (process.env.NEXT_PUBLIC_SITE_URL || 'https://domino-sky.example.com').replace(/\/+$/, ''),
+  url: (process.env.NEXT_PUBLIC_SITE_URL || 'https://domino-sky.hkr.dpdns.org').replace(/\/+$/, ''),
   slug: 'domino-sky',                                              // storage names, cache names (hk:init rewrites)
   author: 'Himanshu Kumar',
   track: 'PromptWars 2026',

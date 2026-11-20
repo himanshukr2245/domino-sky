@@ -6,4 +6,4 @@ Additional journeys prove that edited inputs preserve the previous calculation u
 
 Phase 2 adds route-to-timeline-to-inspector selection; airport focus that preserves the closure; clearing filters that conflict with external selection; a search empty state; the Kolkata connection shortfall; keyboard airport selection; the full fleet timeline; reduced effects; and captured production layouts with no page errors or horizontal overflow. These are covered by e2e/operations.spec.ts.
 
-The later-phase golden path adds recovery preview, validated apply, before/after comparison, and undo. Those actions remain outside the current implementation.
+Recovery preview, validated apply, before/after comparison, cancellation inspection and undo are implemented in e2e/recovery.spec.ts, alongside stale AI response and forged request checks.

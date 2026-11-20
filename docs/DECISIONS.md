@@ -1,5 +1,10 @@
 # Domino Sky decisions
 
+- 2026-11-20: User explicitly approved Next/eslint-config-next 16.4.6, Zod 4.6.6 and compatible security patches. OpenNext is a build dependency. No HK gate script was changed.
+- 2026-11-20: Gemini 3.1 Flash Lite produced a validated live recommendation. Supabase schema and real REST session isolation were verified. The database password remains local provisioning-only.
+- 2026-11-20: Removed unnecessary local Miniflare initialization: this app uses server fetch and environment values, not Worker bindings. The production adapter remains OpenNext.
+- 2026-11-20: Recovery preserves original disruption; physically recomputed candidate outcomes explicitly expose cancellation costs. A 15-minute crew transfer buffer is an assumption.
+
 - 2026-11-20 — Phase 2 completed: full npm run check passed with 101 unit tests and 80 browser checks. Desktop/mobile production screenshots were inspected. Kept the user-requested dev server running and preserved the original simulator, dataset, dependencies and gate scripts. Phase 3 is the next work boundary.
 
 - 2026-11-20 — Phase 2 uses a single selected flight across the map, timeline, manifest and inspector. Airport focus is a separate presentation filter and cannot silently edit the closure. External selection clears conflicting filters.

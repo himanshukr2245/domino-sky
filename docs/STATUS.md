@@ -1,45 +1,25 @@
 # Domino Sky status
 
-Updated 2026-11-20. Phases 1 and 2: COMPLETE. Next phase: 3, validated recovery and Gemini adviser. Public deployment: not verified. Gemini: not implemented. No external publication or hackathon submission has been made.
+Updated 2026-11-20, 13:09 IST. Phases 1-3 implemented. Phase 4 release verification in progress. Public deployment requires verification after push; no hackathon submission has been made by this agent.
 
-## Phase 2 implementation and verification
+## Current evidence
 
-The user requested a running local preview and the next phase. The development server is running at http://127.0.0.1:3000/app and is intentionally left running for the user. Logs and launcher PID are under .hk/runtime/ (ignored by Git). This explicit user request authorizes the development server despite the template's default instruction not to launch servers for the human.
+- Next.js 16.4.6 production build, TypeScript, ESLint, contract generation, secrets, assets, RLS and dynamic-page gates passed.
+- 122 unit tests in 8 files passed. Full phone/desktop browser suite is running. It found a recovery comparison keyboard-scroll issue and a legacy redirect scan race; both have been fixed and await rerun.
+- Production dependency audit: found 0 vulnerabilities.
+- Real Gemini request returned adviserMode gemini and providerStatus ready with a validated plan. Selected gemini-3.1-flash-lite after verifying model access and generation. Provider tests also cover invalid output and fallback.
+- Supabase migration applied to the user-selected project through a TLS-verified session pooler. domino_scenarios has RLS enabled. Real REST proof: save 201, own row readable, other session isolated, no-owner access isolated, forged ownership rejected, durable quota available, test row deleted.
+- Exact-value scan checked 3 private credential values across 237 publishable files, Git history and 20 browser artifacts: no findings. Credentials and provisioning helpers remain ignored.
+- Cloudflare build fix packages Next output in the Workers CI postbuild with OpenNext --skipNextBuild. Linux build and public release are not yet verified for this change. Runtime secrets must be configured in Cloudflare; local success does not establish remote configuration.
 
-Implemented linked map routes and airport focus, scheduled/projected aircraft timelines, a shared selected-flight state, dependency-only cause chains, turnaround accounting, per-flight connection details, crew duty detail, flight search and status filters, clear/empty states, the Kolkata connection squeeze preset, and a refined responsive cockpit. Pure inspection helpers reuse the existing simulator; recovery and provider calls remain outside Phase 2.
+## Implemented
 
-- npm run check:fast passed after implementation.
-- Domain simulator/inspection tests: 79 passed.
-- Full unit suite: 101 passed in 5 files.
-- Production build and dynamic-page gate passed.
-- npm run check passed, including the fast gate, asset checks, 101 unit tests, the production build, dynamic-page gate, and all 80 browser checks. The final browser run completed with 80 passed and no failures.
-- Production layouts captured at .hk/qa/phase2-desktop.png and .hk/qa/phase2-mobile.png and visually inspected. The screenshot cases reported no page errors or horizontal document overflow.
-- Browser coverage includes linked route/timeline/manifest/cause selection, airport focus that preserves the closure, conflicting filter reset, empty search, the exact CX14 shortfall, keyboard controls, a one-aircraft baseline and complete fleet view, reduced effects, both themes, CSP, soft navigation and top-loader feedback.
-- The initial full run had 77 passing checks and 3 failures: two route tests expected the wrong representative flight and one hydration wait timed out. The route expectation was corrected to the documented largest-delay choice, and the baseline timeline was corrected to show affected plus selected aircraft. The final full gate passed without changing timeouts, skipping tests or weakening gate scripts.
-- The in-app browser has no connected session. The environment command policy blocked automatic browser-window launch, so the user was given the direct local URL. The project browser tests run in isolated Chromium for software verification.
+Deterministic closure and aircraft/crew propagation; linked map, timeline, manifest and inspector; passenger connection detail; cancellation, holds and supplied-spare recovery; bounded ranking; preserved before/after, preview/apply/undo; validated Gemini review with rules fallback; session-owned saved scenarios; durable provider and storage quotas; server input, origin and streamed-size validation; reduced effects and theme support.
 
-## Implemented in Phase 1
+## Limits
 
-Fresh core-only HK-based app; generated domain contracts; preserved and validated input network; deterministic airport closure and aircraft propagation; missed connection and projected crew calculations; an app-specific home and /app cockpit; geographic network preview; flight cause inspector; passenger/crew detail; light/dark appearance; model help; honest health/demo-video endpoints.
+Synthetic dataset only. No airport capacity queue, ferry, diversion, reserve crew or passenger rebooking. Fixed block times, supplied 30-minute aircraft turnaround, explicit 15-minute crew transfer assumption. Boardings are not unique travelers. Recovery is best among evaluated candidates, not globally optimal. Session capability is not an account identity. Automated accessibility does not replace real assistive-technology testing. Some unreachable starter component source remains. No evaluator score, physical-device performance, demo video or external social post is claimed.
 
-## Phase 1 verification
+## Prior phase evidence
 
-- Pinned dependency install succeeded with physical project node_modules.
-- Domain tests: 71 passed, including the independently calculated Mumbai fixture.
-- Full unit suite: 93 passed in 4 files.
-- npm run check:fast: passed.
-- npm run check: passed, including asset/security/token checks, the unit suite, production Next build, dynamic-page check, and 68 Playwright checks on phone/desktop viewports.
-- Browser coverage includes the actual Mumbai run/inspection/reset, edited-input behavior, viewport overflow, light/dark accessibility, nonce CSP, theme switching, soft navigation, and top-loader feedback.
-- Separate production visual inspection captured .hk/qa/phase1-desktop.png and phase1-mobile.png. Both showed no page errors and no horizontal page overflow. The temporary QA server was stopped.
-- No release, Worker runtime, live deployment, provider request, or real-device accessibility claim has been verified. Browser viewport checks do not replace real-device testing.
-
-The check output includes inherited token-check exemptions for the remaining template demonstrations and Next's middleware deprecation notice. Gates were not changed or weakened. Middleware remains per the pinned OpenNext template compatibility policy.
-
-## Remaining phases
-
-3: cancellation/spare feasibility, candidate ranking, recovery comparison/apply/undo, Gemini server integration.
-4: template cleanup, release gates, Linux Worker build, public deployment and live verification, real submission links.
-
-## Known limitations
-
-No recovery engine or AI request yet. No airport capacity queue, diversion, ferry, reserve crew, or rebooking model. No unique traveler count. Some inherited demonstration routes/components remain pending cleanup; they are absent from primary navigation. The example.com metadata fallback is a placeholder. No live URL or performance claim has been verified. The local preview is available only on this computer; viewport checks do not establish physical phone/device or assistive-technology coverage.
+Phase 1 passed 93 unit tests and 68 browser checks. Phase 2 passed 101 unit tests and 80 browser checks, with desktop/mobile screenshots and no page errors or horizontal overflow. The user explicitly requested a persistent local preview; current preview readiness is checked separately after release testing.

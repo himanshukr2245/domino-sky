@@ -111,7 +111,7 @@ data class DelayCause(
 )
 
 /**
- * Actual times are projections; crew breaches are not dispatch authorization.
+ * Operated projections have actual times; cancelled flights omit actual times and retain explicit cancellation accounting.
  */
 @Serializable
 data class FlightProjection(
@@ -122,13 +122,16 @@ data class FlightProjection(
     @SerialName("destination") val destination: String,
     @SerialName("scheduledDeparture") val scheduledDeparture: Long,
     @SerialName("scheduledArrival") val scheduledArrival: Long,
-    @SerialName("actualDeparture") val actualDeparture: Long,
-    @SerialName("actualArrival") val actualArrival: Long,
+    @SerialName("actualDeparture") val actualDeparture: Long? = null,
+    @SerialName("actualArrival") val actualArrival: Long? = null,
     @SerialName("departureDelay") val departureDelay: Long,
     @SerialName("arrivalDelay") val arrivalDelay: Long,
     @SerialName("pax") val pax: Long,
     @SerialName("previousFlightId") val previousFlightId: String? = null,
-    @SerialName("causes") val causes: List<DelayCause>
+    @SerialName("causes") val causes: List<DelayCause>,
+    @SerialName("status") val status: String,
+    @SerialName("scheduledTailId") val scheduledTailId: String,
+    @SerialName("cancellationReason") val cancellationReason: String? = null
 )
 
 /**
@@ -142,9 +145,10 @@ data class ConnectionProjection(
     @SerialName("toFlight") val toFlight: String,
     @SerialName("passengers") val passengers: Long,
     @SerialName("minimumMinutes") val minimumMinutes: Long,
-    @SerialName("availableMinutes") val availableMinutes: Long,
+    @SerialName("availableMinutes") val availableMinutes: Long? = null,
     @SerialName("shortfallMinutes") val shortfallMinutes: Long,
-    @SerialName("missed") val missed: Boolean
+    @SerialName("missed") val missed: Boolean,
+    @SerialName("reason") val reason: String
 )
 
 /**
@@ -176,7 +180,10 @@ data class SimulationMetrics(
     @SerialName("passengerDelayMinutes") val passengerDelayMinutes: Long,
     @SerialName("missedConnections") val missedConnections: Long,
     @SerialName("missedConnectionPassengers") val missedConnectionPassengers: Long,
-    @SerialName("crewBreaches") val crewBreaches: Long
+    @SerialName("crewBreaches") val crewBreaches: Long,
+    @SerialName("operatedFlights") val operatedFlights: Long,
+    @SerialName("cancelledFlights") val cancelledFlights: Long,
+    @SerialName("cancelledBoardings") val cancelledBoardings: Long
 )
 
 /**
@@ -188,7 +195,55 @@ data class SimulationResult(
     @SerialName("flights") val flights: List<FlightProjection>,
     @SerialName("connections") val connections: List<ConnectionProjection>,
     @SerialName("crews") val crews: List<CrewProjection>,
-    @SerialName("metrics") val metrics: SimulationMetrics
+    @SerialName("metrics") val metrics: SimulationMetrics,
+    @SerialName("actions") val actions: List<RecoveryAction>,
+    @SerialName("policy") val policy: RecoveryPolicy
+)
+
+/**
+ * A validated cancellation, hold-until, or supplied-spare suffix assignment.
+ */
+@Serializable
+data class RecoveryAction(
+    @SerialName("kind") val kind: String,
+    @SerialName("flightId") val flightId: String,
+    @SerialName("spareTailId") val spareTailId: String? = null,
+    @SerialName("holdUntilMinute") val holdUntilMinute: Long? = null
+)
+
+/**
+ * Explicit extra assumption for crews changing aircraft.
+ */
+@Serializable
+data class RecoveryPolicy(
+    @SerialName("crewTransferMinutes") val crewTransferMinutes: Long,
+    @SerialName("engineVersion") val engineVersion: String
+)
+
+/**
+ * A complete candidate recalculated by the same deterministic engine.
+ */
+@Serializable
+data class RecoveryCandidate(
+    @SerialName("id") val id: String,
+    @SerialName("title") val title: String,
+    @SerialName("actions") val actions: List<RecoveryAction>,
+    @SerialName("result") val result: SimulationResult,
+    @SerialName("feasible") val feasible: Boolean,
+    @SerialName("issues") val issues: List<String>
+)
+
+/**
+ * Only verified candidate IDs and fact references cross the adviser boundary.
+ */
+@Serializable
+data class RecoveryResponse(
+    @SerialName("scenarioKey") val scenarioKey: String,
+    @SerialName("candidates") val candidates: List<RecoveryCandidate>,
+    @SerialName("recommendedId") val recommendedId: String,
+    @SerialName("adviserMode") val adviserMode: String,
+    @SerialName("reasonCodes") val reasonCodes: List<String>,
+    @SerialName("providerStatus") val providerStatus: String
 )
 
 /**

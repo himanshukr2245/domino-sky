@@ -37,6 +37,7 @@ const eslintConfig = defineConfig([
     // generated output — never lint it (a local OpenNext build writes thousands of bundled lines into .open-next)
     ".open-next/**",
     ".wrangler/**",
+    ".hk/**",
     "coverage/**",
     "playwright-report/**",
     "test-results/**",

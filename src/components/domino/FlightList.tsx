@@ -1,5 +1,6 @@
 import { Button, Input } from '@/components/ui';
 import { Select } from '@/components/ui/Select';
+import { isOperated } from '@/lib/simulation/simulate';
 import { formatTime } from '@/lib/simulation/time';
 import type { FlightProjection } from '@/types/contracts/generated';
 
@@ -17,15 +18,15 @@ export function FlightList({ flights, selectedId, query, onQuery, status, onStat
       </div>
       <div className="ds-flight-toolbar">
         <label><span>Find a flight</span><Input type="search" aria-label="Search flights" placeholder="Flight, aircraft or airport" value={query} onChange={event => onQuery(event.target.value)} /></label>
-        <label><span>Flight status</span><Select aria-label="Flight filter" value={status} onChange={event => onStatus(event.target.value)}><option value="all">All flights</option><option value="delayed">Delayed flights</option><option value="crew">Crew duty risk</option></Select></label>
+        <label><span>Flight status</span><Select aria-label="Flight filter" value={status} onChange={event => onStatus(event.target.value)}><option value="all">All flights</option><option value="delayed">Delayed flights</option><option value="crew">Crew duty risk</option><option value="cancelled">Cancelled flights</option></Select></label>
       </div>
       <div className="ds-flight-list" tabIndex={0} role="region" aria-label="Flight results">
         {flights.length ? flights.map(flight => (
-          <Button key={flight.id} variant="plain" size="none" sound="none" latencyMode="none" className={`ds-flight-row ${selectedId === flight.id ? 'ds-flight-selected' : ''}`} aria-pressed={selectedId === flight.id} aria-label={`Inspect ${flight.id}, ${flight.origin} to ${flight.destination}, ${flight.arrivalDelay ? `${flight.arrivalDelay} minutes delayed` : 'on time'}`} onClick={() => onSelect(flight.id)}>
+          <Button key={flight.id} variant="plain" size="none" sound="none" latencyMode="none" className={`ds-flight-row ${selectedId === flight.id ? 'ds-flight-selected' : ''}`} aria-pressed={selectedId === flight.id} aria-label={`Inspect ${flight.id}, ${flight.origin} to ${flight.destination}, ${flight.status === 'cancelled' ? 'cancelled' : flight.arrivalDelay ? `${flight.arrivalDelay} minutes delayed` : 'on time'}`} onClick={() => onSelect(flight.id)}>
             <span><strong className="font-mono">{flight.id}</strong><small>{flight.tailId}</small></span>
             <span className="ds-flight-route">{flight.origin}<span className="text-fg-muted"> / </span>{flight.destination}</span>
-            <span className="font-mono">{formatTime(flight.actualDeparture)}<small>{formatTime(flight.actualArrival)} arrival</small></span>
-            <span className={flight.arrivalDelay ? 'ds-flight-delay' : 'ds-flight-on-time'}>{flight.arrivalDelay ? `+${flight.arrivalDelay}m` : 'On time'}</span>
+            <span className="font-mono">{isOperated(flight) ? formatTime(flight.actualDeparture) : 'Cancelled'}<small>{isOperated(flight) ? formatTime(flight.actualArrival) + ' arrival' : 'Not operated'}</small></span>
+            <span className={flight.arrivalDelay ? 'ds-flight-delay' : 'ds-flight-on-time'}>{flight.status === 'cancelled' ? 'Cancelled' : flight.arrivalDelay ? `+${flight.arrivalDelay}m` : 'On time'}</span>
           </Button>
         )) : <div className="ds-empty-state"><strong>No flights match this view.</strong><p>Clear filters or try a different flight, aircraft or airport.</p><Button variant="secondary" sound="none" onClick={onClear}>Show all flights</Button></div>}
       </div>

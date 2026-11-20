@@ -263,7 +263,10 @@
           "enum": [
             "late-aircraft",
             "origin-closure",
-            "destination-closure"
+            "destination-closure",
+            "recovery-hold",
+            "late-crew",
+            "spare-availability"
           ]
         },
         "minutes": {
@@ -283,7 +286,7 @@
     },
     {
       "name": "FlightProjection",
-      "description": "Actual times are projections; crew breaches are not dispatch authorization.",
+      "description": "Operated projections have actual times; cancelled flights omit actual times and retain explicit cancellation accounting.",
       "properties": {
         "id": {
           "type": "string"
@@ -330,6 +333,24 @@
             "type": "object",
             "objectName": "DelayCause"
           }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "operated",
+            "cancelled"
+          ]
+        },
+        "scheduledTailId": {
+          "type": "string"
+        },
+        "cancellationReason": {
+          "type": "string",
+          "enum": [
+            "requested",
+            "aircraft-unavailable",
+            "crew-unavailable"
+          ]
         }
       },
       "required": [
@@ -340,12 +361,12 @@
         "destination",
         "scheduledDeparture",
         "scheduledArrival",
-        "actualDeparture",
-        "actualArrival",
         "departureDelay",
         "arrivalDelay",
         "pax",
-        "causes"
+        "causes",
+        "status",
+        "scheduledTailId"
       ]
     },
     {
@@ -378,6 +399,14 @@
         },
         "missed": {
           "type": "boolean"
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "made",
+            "short-transfer",
+            "flight-cancelled"
+          ]
         }
       },
       "required": [
@@ -387,9 +416,9 @@
         "toFlight",
         "passengers",
         "minimumMinutes",
-        "availableMinutes",
         "shortfallMinutes",
-        "missed"
+        "missed",
+        "reason"
       ]
     },
     {
@@ -469,6 +498,15 @@
         },
         "crewBreaches": {
           "type": "integer"
+        },
+        "operatedFlights": {
+          "type": "integer"
+        },
+        "cancelledFlights": {
+          "type": "integer"
+        },
+        "cancelledBoardings": {
+          "type": "integer"
         }
       },
       "required": [
@@ -480,7 +518,10 @@
         "passengerDelayMinutes",
         "missedConnections",
         "missedConnectionPassengers",
-        "crewBreaches"
+        "crewBreaches",
+        "operatedFlights",
+        "cancelledFlights",
+        "cancelledBoardings"
       ]
     },
     {
@@ -515,13 +556,159 @@
         "metrics": {
           "type": "object",
           "objectName": "SimulationMetrics"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "RecoveryAction"
+          }
+        },
+        "policy": {
+          "type": "object",
+          "objectName": "RecoveryPolicy"
         }
       },
       "required": [
         "flights",
         "connections",
         "crews",
-        "metrics"
+        "metrics",
+        "actions",
+        "policy"
+      ]
+    },
+    {
+      "name": "RecoveryAction",
+      "description": "A validated cancellation, hold-until, or supplied-spare suffix assignment.",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "cancel",
+            "hold",
+            "swap"
+          ]
+        },
+        "flightId": {
+          "type": "string"
+        },
+        "spareTailId": {
+          "type": "string"
+        },
+        "holdUntilMinute": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "flightId"
+      ]
+    },
+    {
+      "name": "RecoveryPolicy",
+      "description": "Explicit extra assumption for crews changing aircraft.",
+      "properties": {
+        "crewTransferMinutes": {
+          "type": "integer"
+        },
+        "engineVersion": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "crewTransferMinutes",
+        "engineVersion"
+      ]
+    },
+    {
+      "name": "RecoveryCandidate",
+      "description": "A complete candidate recalculated by the same deterministic engine.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "RecoveryAction"
+          }
+        },
+        "result": {
+          "type": "object",
+          "objectName": "SimulationResult"
+        },
+        "feasible": {
+          "type": "boolean"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "actions",
+        "result",
+        "feasible",
+        "issues"
+      ]
+    },
+    {
+      "name": "RecoveryResponse",
+      "description": "Only verified candidate IDs and fact references cross the adviser boundary.",
+      "properties": {
+        "scenarioKey": {
+          "type": "string"
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "objectName": "RecoveryCandidate"
+          }
+        },
+        "recommendedId": {
+          "type": "string"
+        },
+        "adviserMode": {
+          "type": "string",
+          "enum": [
+            "gemini",
+            "rules"
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "providerStatus": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "not-configured",
+            "unavailable",
+            "invalid-output",
+            "quota-limited"
+          ]
+        }
+      },
+      "required": [
+        "scenarioKey",
+        "candidates",
+        "recommendedId",
+        "adviserMode",
+        "reasonCodes",
+        "providerStatus"
       ]
     }
   ]

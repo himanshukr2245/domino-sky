@@ -20,7 +20,7 @@ export function PeoplePanel({ result, onSelect }: { result: SimulationResult; on
           {connections.length ? connections.map(connection => (
             <div key={connection.id} className="ds-connection-row">
               <div><strong>{connection.id} <span>· {connection.airport}</span></strong><span>{connection.passengers} passengers</span></div>
-              <p><strong className={connection.missed ? 'text-danger' : 'text-cyan-fg'}>{connection.missed ? `Missed · ${connection.shortfallMinutes} min short` : 'Connection intact'}</strong><span>{connection.availableMinutes} min available / {connection.minimumMinutes} min required</span></p>
+              <p><strong className={connection.missed ? 'text-danger' : 'text-cyan-fg'}>{connection.reason === 'flight-cancelled' ? 'Connection lost to cancellation' : connection.missed ? `Missed · ${connection.shortfallMinutes} min short` : 'Connection intact'}</strong><span>{connection.availableMinutes === undefined ? 'A required flight is canceled' : connection.availableMinutes + ' min available / ' + connection.minimumMinutes + ' min required'}</span></p>
               <div className="ds-connection-flights"><Button variant="plain" size="none" sound="none" latencyMode="none" onClick={() => onSelect(connection.fromFlight)} className="ds-text-control">Inbound {connection.fromFlight}</Button><Button variant="plain" size="none" sound="none" latencyMode="none" onClick={() => onSelect(connection.toFlight)} className="ds-text-control">Outbound {connection.toFlight}</Button></div>
             </div>
           )) : <p className="ds-empty-note">All {result.connections.length} supplied connection groups have enough transfer time in this result.</p>}

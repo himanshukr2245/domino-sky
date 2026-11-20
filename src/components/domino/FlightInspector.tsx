@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui';
+import { isOperated } from '@/lib/simulation/simulate';
 import { NETWORK } from '@/lib/simulation/network';
 import { causeChain, turnaroundDetail } from '@/lib/simulation/inspect';
 import { formatTime } from '@/lib/simulation/time';
@@ -14,12 +15,12 @@ export function FlightInspector({ result, selected, onSelect }: {
 
   return (
     <aside className="ds-panel ds-inspector" aria-labelledby="inspector-heading" data-testid="flight-inspector">
-      <div className="ds-panel-heading"><p className="ds-eyebrow">FLIGHT INSPECTOR</p><span className={selected.arrivalDelay ? 'ds-inspection-status ds-inspection-delayed' : 'ds-inspection-status'}>{selected.arrivalDelay ? `+${selected.arrivalDelay} min` : 'On time'}</span></div>
+      <div className="ds-panel-heading"><p className="ds-eyebrow">FLIGHT INSPECTOR</p><span className={selected.arrivalDelay ? 'ds-inspection-status ds-inspection-delayed' : 'ds-inspection-status'}>{selected.status === 'cancelled' ? 'Cancelled' : selected.arrivalDelay ? `+${selected.arrivalDelay} min` : 'On time'}</span></div>
       <h2 id="inspector-heading" tabIndex={-1} className="ds-inspector-id">{selected.id}<span>{selected.origin} / {selected.destination}</span></h2>
       <p className="ds-inspector-tail">{selected.tailId} <span>·</span> Leg {selected.legOrder} <span>·</span> {selected.pax} boardings</p>
       <div className="ds-time-comparison">
         <div><p>Scheduled</p><strong>{formatTime(selected.scheduledDeparture)}</strong><span>{formatTime(selected.scheduledArrival)} arrival</span></div>
-        <div><p>Projected</p><strong>{formatTime(selected.actualDeparture)}</strong><span>{formatTime(selected.actualArrival)} arrival</span></div>
+        <div><p>Projected</p><strong>{isOperated(selected) ? formatTime(selected.actualDeparture) : 'Cancelled'}</strong><span>{isOperated(selected) ? formatTime(selected.actualArrival) + ' arrival' : 'No operated arrival'}</span></div>
       </div>
       <section className="ds-inspector-section" aria-label="Recorded delay causes">
         <h3 className="ds-eyebrow">WHY THIS FLIGHT MOVED</h3>
@@ -28,11 +29,11 @@ export function FlightInspector({ result, selected, onSelect }: {
             {selected.causes.map((cause, index) => (
               <li key={index}>
                 <strong>+{cause.minutes} min</strong>
-                <span>{cause.kind === 'late-aircraft' ? `Aircraft arriving late from ${cause.relatedFlightId}; minimum turnaround still required.` : cause.kind === 'destination-closure' ? `${cause.airport} arrival held on the ground until reopening.` : `${cause.airport} departure held until reopening.`}</span>
+                <span>{cause.kind === 'recovery-hold' ? 'Departure deliberately held for passenger recovery.' : cause.kind === 'late-crew' ? 'Waiting for the original crew after its inbound flight.' : cause.kind === 'spare-availability' ? 'Waiting until the supplied spare becomes available.' : cause.kind === 'late-aircraft' ? `Aircraft arriving late from ${cause.relatedFlightId}; minimum turnaround still required.` : cause.kind === 'destination-closure' ? `${cause.airport} arrival held on the ground until reopening.` : `${cause.airport} departure held until reopening.`}</span>
               </li>
             ))}
           </ol>
-        ) : <p className="text-sm text-fg-muted">The scheduled departure remains feasible.</p>}
+        ) : <p className="text-sm text-fg-muted">{selected.status === 'cancelled' ? 'This leg is canceled; aircraft and crew remain at their last operated airport.' : 'The scheduled departure remains feasible.'}</p>}
       </section>
       {chain.length > 1 && (
         <section className="ds-inspector-section" aria-label="Delay cause chain">
@@ -67,8 +68,8 @@ export function FlightInspector({ result, selected, onSelect }: {
           <div key={connection.id} className="ds-inspector-connection">
             <strong>{connection.id} · {connection.passengers} passengers</strong>
             <span>{connection.fromFlight} / {connection.toFlight}</span>
-            <span>{connection.availableMinutes} min available / {connection.minimumMinutes} min required</span>
-            <span className={connection.missed ? 'text-danger' : 'text-cyan-fg'}>{connection.missed ? `Missed · ${connection.shortfallMinutes} min short` : 'Connection intact'}</span>
+            <span>{connection.availableMinutes === undefined ? 'A required flight is canceled' : connection.availableMinutes + ' min available / ' + connection.minimumMinutes + ' min required'}</span>
+            <span className={connection.missed ? 'text-danger' : 'text-cyan-fg'}>{connection.reason === 'flight-cancelled' ? 'Connection lost to cancellation' : connection.missed ? `Missed · ${connection.shortfallMinutes} min short` : 'Connection intact'}</span>
           </div>
         )) : <p className="text-sm text-fg-muted">No supplied connection groups use this flight.</p>}
       </details>

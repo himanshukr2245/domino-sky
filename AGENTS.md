@@ -18,7 +18,7 @@ Kind: EVENT · Mode: SPRINT · Modules: core only · Data: supplied synthetic ne
 Live: not deployed or verified. User selected Gemini API and existing Cloudflare hosting. Follow `docs/IMPLEMENTATION_PLAN.md` one phase at a time; status and actual gate evidence live in `docs/STATUS.md`.
 
 ## Stack (pinned — do not upgrade without asking)
-next 16.3.8 (security floor 16.3.8) · react 19.2 · @opennextjs/cloudflare 1.20.8 · wrangler 4 · tailwindcss 4 (`@theme` tokens in `src/app/globals.css`, no config file) · zod 4 · @supabase/ssr + supabase-js (auth module) · idb (offline module) · vitest 5 · @playwright/test + @axe-core/playwright
+next 16.4.6 (user-approved security update 2026-11-20) · react 19.2 · @opennextjs/cloudflare 1.20.8 · wrangler 4 · tailwindcss 4 (`@theme` tokens in `src/app/globals.css`, no config file) · zod 4 · @supabase/ssr + supabase-js (auth module) · idb (offline module) · vitest 5 · @playwright/test + @axe-core/playwright
 Hosting: Cloudflare Workers via OpenNext · Edge gate: `src/middleware.ts` (Next 16's proxy.ts is experimental on OpenNext) · Node 24 (`.nvmrc`)
 
 ## Folder map

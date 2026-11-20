@@ -11,6 +11,7 @@
     "dev:clean": "node scripts/clean-dev.mjs",
     "dev:phone": "next dev --turbo -H 0.0.0.0",
     "build": "next build",
+    "postbuild": "node ops/cloudflare-postbuild.mjs",
     "start": "next start",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
@@ -32,13 +33,13 @@
     "seal": "node scripts/hk-seal.mjs"
   },
   "dependencies": {
-    "@opennextjs/cloudflare": "1.20.8",
-    "next": "16.3.8",
+    "next": "16.4.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "zod": "^4.6.5"
+    "zod": "4.6.6"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "1.20.8",
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
@@ -47,7 +48,7 @@
     "@types/react-dom": "^19",
     "esbuild": "^0.27.7",
     "eslint": "^9",
-    "eslint-config-next": "16.3.8",
+    "eslint-config-next": "16.4.6",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^5.0.3",

@@ -1,38 +1,33 @@
-# Domino Sky
+﻿# Domino Sky
 
 See the cascade. Find the recovery. Prove the difference.
 
-A flight disruption simulator for PromptWars 2026, built from the HK starter. The cockpit models airport closures, aircraft delay propagation, passenger connection outcomes, and projected crew duty. Phase 2 adds linked geographic selection, scheduled/projected aircraft timelines, cause chains, turnaround accounting, search, and airport/status filters. Recovery comparison and Gemini integration are planned in Phase 3.
+A flight disruption and recovery cockpit for PromptWars 2026, built with Next.js, TypeScript, Gemini and Supabase on the HK starter. Close an airport, follow aircraft delays, inspect missed passenger connections and crew duty, then compare a validated recovery before applying it.
+
+[Open cockpit](https://domino-sky.hkr.dpdns.org/app) | [Verification status](docs/STATUS.md) | [Evaluation evidence](docs/EVALUATION.md)
+
+## Try it
+
+Run the default Mumbai closure, 14:30-16:00 IST. Select flights across the map, timeline and inspector. Preview the recommended recovery, compare its consequences, apply, then undo. Gemini reviews computed candidates when configured. Saved scenarios use a private browser session when the database is available. Explicit status messages identify unavailable services.
 
 ## Run locally
 
-Use Node 24. Install the pinned dependencies with `npm ci`, then run `npm run dev`. Open http://127.0.0.1:3000/app. The app requires no account or API key for deterministic simulation.
+Use Node 24, npm ci, then npm run dev. Open http://127.0.0.1:3000/app. Simulation and recovery need no credentials. Put optional service values only in ignored .env.local or Cloudflare server secrets; .env.example contains names only.
 
-Try BOM, 14:30 IST, duration 90 minutes. Inspect DS0302, DS0303, and DS0304, then crew CR03. Reset returns the complete network to baseline.
+## Model and safety
 
-Select a route or a timeline leg to inspect the same flight across every view. Airport focus filters the view without editing the closure. The timeline starts with affected aircraft and the selected aircraft; choose All aircraft for the complete fleet. The map's View flight details link jumps to the inspector on smaller screens.
+The deterministic engine preserves the supplied synthetic network. Fixed block times, ground holds and the supplied 30-minute aircraft turnaround constrain flights. Crew changing aircraft use an explicitly modeled 15-minute transfer buffer. Cancellation leaves aircraft and crew at their last operated location. Spares must satisfy location, availability and seats. No ferry, reserve crew, diversion, capacity queue or rebooking is invented.
 
-For a passenger connection example, choose the Kolkata connection squeeze preset and run it. Open the broken CX14 group's outbound flight, DS0105, and expand Passenger connections in the inspector. The actual projected transfer window explains the missed connection.
+Every recovery is recalculated and ranked by feasibility, canceled boardings, failed-connection passengers, passenger delay and intervention count. Best evaluated does not mean globally optimal. Boardings and connection-group passengers remain separate measures.
 
-## Project records
+Gemini returns a known candidate ID and allowed reason codes through a server endpoint. Strict validation binds it to a calculated feasible plan. Displayed numbers and explanations come from engine facts. A durable quota must succeed before a provider request. Provider failure keeps an explicitly labeled deterministic recommendation.
 
-- [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
-- [Current status and verification](docs/STATUS.md)
-- [Phase 2 implementation details](docs/plans/PHASE_2.md)
-- [Model decisions](docs/DECISIONS.md)
-- [Supported claims](docs/CLAIMS.md)
-- [Golden path](docs/GOLDEN_PATH.md)
+Saved scenarios contain closure inputs and a validated plan ID. An HttpOnly browser capability is hashed before database use; row-level security isolates sessions. This is session ownership, not account authentication. Runtime code uses a publishable key, never a service-role or database password.
 
 ## Validation
 
-`npm run check:fast` checks generated contracts, types, lint, secrets, tokens, honesty, Git, icons, and toolchain. `npm run check` adds assets, domain/unit tests, production build, dynamic rendering, and Playwright on phone and desktop viewports. `npm run check:release` and live checks remain required before release.
-
-## Dataset and assumptions
-
-The supplied synthetic network is preserved in `src/data/flight-network.json`. Times are IST. The engine uses fixed block times, ground holds, and a 30-minute minimum turnaround. Airport movements at reopening are allowed. Connections and crew duty use projected times. Crew breaches describe an infeasible projection. Flight boardings and connection group passengers are separate measures. Airport slot queues, diversions, ferry flights, and reserve crew are not modeled.
+npm run check:fast checks generated contracts, types, lint, secrets and toolchain. npm run check adds unit tests, production build, dynamic rendering and phone/desktop browser checks. npm run check:release adds dependency audit, lock compatibility, bundle, license and OpenNext checks. GitHub CI rehearses the actual Linux Worker build and dry run. Actual results and unverified integrations are recorded in [STATUS](docs/STATUS.md).
 
 ## Deployment
 
-Public deployment is not yet verified. Use a public GitHub repository with one branch, `main`, and Linux Cloudflare Workers Builds. Build command: `npx opennextjs-cloudflare build`. Deploy command in Cloudflare: `npx wrangler deploy`. Do not deploy Windows-built Worker output. Set the actual public URL through `NEXT_PUBLIC_SITE_URL`; the example.com fallback is a placeholder only.
-
-Gemini was selected for the later server adviser; no provider API call is implemented in Phase 1. Credentials must remain server secrets. The original brief requires public repository/deployment links and a LinkedIn post; no external post or submission has been made.
+Use Linux Cloudflare Workers Builds. Build command: npm run build. Its Workers-only postbuild packages completed Next output through OpenNext --skipNextBuild. Deploy command: npx wrangler deploy. Direct npx opennextjs-cloudflare build is also supported. Never upload a Windows-built Worker. See [deployment setup](docs/DEPLOYMENT.md), [security](SECURITY.md), [plan](docs/IMPLEMENTATION_PLAN.md) and [recovery design](docs/plans/PHASE_3.md).
