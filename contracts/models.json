@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HKContractDefinitions",
+  "entities": [
+    {
+      "name": "SystemAlert",
+      "description": "Cross-platform system alert model shared between Web and Android",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string", "enum": ["SECURITY", "PERFORMANCE", "SYSTEM", "CRITICAL"] },
+        "severity": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+        "score": { "type": "integer" },
+        "isActive": { "type": "boolean" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["id", "title", "category", "severity", "score", "isActive", "timestamp"]
+    }
+  ]
+}
