@@ -13,6 +13,8 @@ Updated 2026-11-20. This file replaces the template's product claims.
 | Linked operational inspection | TESTED | e2e/operations.spec.ts verifies route/timeline/manifest/cause selection, airport focus without closure edits, filter reset, connection shortfall, keyboard control, all-aircraft scope, reduced effects and captured layouts. |
 | Mumbai fixture: DS0302 +25, DS0303 +20, DS0304 +15; CR03 duty 605/600 | TESTED | simulate.test.ts, closure BOM 14:30–16:00 IST, fixed blocks, 30-minute minimum turnaround, before recovery. |
 | Capacity queues, diversions, reserve crew | NOT MODELED | Airport capacity is informational in this phase. |
-| AI recovery and before/after recovery | PLANNED | Later phases. No live Gemini request exists in Phase 1. |
-| Public deployment | UNVERIFIED | No live public URL or Linux Worker build has been verified. |
+| AI recovery and before/after recovery | IMPLEMENTED | Strict model-output binding, deterministic candidate recomputation, preview/apply/undo. Real local Gemini application request passed; public runtime configuration remains separate. |
+| Public deployment | VERIFIED | Cloudflare release c95fbfbb41c6 passed check:live --expect-head on 2026-11-20. Packaged Linux Worker smoke returned 200 for health, home and cockpit. |
 | Performance, frame rate, optimal recovery | UNCLAIMED | No measured performance or globally optimal search claim. |
+
+Recovery release evidence: 122 unit tests, 92 browser cases in the Linux gate suite; f569337 full Linux gate passed. Local final browser rerun was 91/92 with a desktop theme hydration timeout. Production audit found 0 vulnerabilities. See STATUS for the separate integration and release limitations.

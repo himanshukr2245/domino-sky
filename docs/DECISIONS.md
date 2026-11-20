@@ -28,3 +28,5 @@
 - 2026-11-20 — Removed personal-use font references; the app uses the existing system sans and monospace families. No map SDK or visualization dependency was added.
 - 2026-11-20 — Corrected the inherited appearance control to resolve system light/dark consistently with the document. Browser checks must exercise actual switch roles and hydration rather than stale template selectors.
 - 2026-11-20 — /demo_video returns an honest unconfigured response until a real HTTPS target is supplied, replacing the starter fallback.
+
+- 2026-11-20: Reproduced Cloudflare 1101 in Linux workerd. Next 16.4 loads server/preview-props.json; adapter 1.20.8 omitted it from its manifest inlining. Added a guarded packaging compatibility patch, kept dependency pins, and added a real Worker runtime smoke. Public release c95fbfbb41c6 passed live verification.

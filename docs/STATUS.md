@@ -1,25 +1,24 @@
 # Domino Sky status
 
-Updated 2026-11-20, 13:09 IST. Phases 1-3 implemented. Phase 4 release verification in progress. Public deployment requires verification after push; no hackathon submission has been made by this agent.
+Updated 2026-11-20, 13:28 IST. Phases 1-3 implemented; Phase 4 deployed and publicly verified. No hackathon submission or LinkedIn post has been made by this agent.
 
-## Current evidence
+## Release evidence
 
-- Next.js 16.4.6 production build, TypeScript, ESLint, contract generation, secrets, assets, RLS and dynamic-page gates passed.
-- 122 unit tests in 8 files passed. Full phone/desktop browser suite is running. It found a recovery comparison keyboard-scroll issue and a legacy redirect scan race; both have been fixed and await rerun.
-- Production dependency audit: found 0 vulnerabilities.
-- Real Gemini request returned adviserMode gemini and providerStatus ready with a validated plan. Selected gemini-3.1-flash-lite after verifying model access and generation. Provider tests also cover invalid output and fallback.
-- Supabase migration applied to the user-selected project through a TLS-verified session pooler. domino_scenarios has RLS enabled. Real REST proof: save 201, own row readable, other session isolated, no-owner access isolated, forged ownership rejected, durable quota available, test row deleted.
-- Exact-value scan checked 3 private credential values across 237 publishable files, Git history and 20 browser artifacts: no findings. Credentials and provisioning helpers remain ignored.
-- Cloudflare build fix packages Next output in the Workers CI postbuild with OpenNext --skipNextBuild. Linux build and public release are not yet verified for this change. Runtime secrets must be configured in Cloudflare; local success does not establish remote configuration.
+- Public https://domino-sky.hkr.dpdns.org/ passed npm run check:live with --expect-head at release c95fbfbb41c6: home 200, health GET/HEAD 200, unknown route 404, all five smoke paths, nonce CSP and security checks passed.
+- Cloudflare Workers Builds successfully deployed the release. Linux CI additionally exercised the actual packaged Worker: /api/health, / and /app returned 200. The packaging fix creates standalone output and inlines Next 16.4's preview-props manifest, which adapter 1.20.8 otherwise omitted. A version-guarded build patch and runtime smoke prevent silent regression.
+- Full Linux CI gate ladder passed for f569337: contracts, TypeScript, lint, unit tests, build, dynamic rendering, phone/desktop browser checks, compatible lockfile and production audit. The suite contains 122 unit tests and 92 browser checks. Subsequent packaging-only changes have their own Worker runtime proof.
+- Local production build and 122 unit tests passed. Local final browser rerun passed 91 of 92; the desktop theme hydration case timed out and also timed out in an isolated rerun. The complete local check:release command therefore did not pass. This limitation is recorded separately from successful Linux CI.
+- Independent release checks passed: production audit (0 vulnerabilities), client bundle secret scan, OpenNext preflight, licenses and chunk budgets. Local page-weight verification is tracked separately; no frame-rate or real-device performance claim is made.
+- Exact private-value scanning found no credential values in publishable files, tracked history or browser artifacts. The supplied database password lives only in ignored provisioning configuration, separate from runtime variables. No HK gate script was changed.
 
-## Implemented
+## Integrations
 
-Deterministic closure and aircraft/crew propagation; linked map, timeline, manifest and inspector; passenger connection detail; cancellation, holds and supplied-spare recovery; bounded ranking; preserved before/after, preview/apply/undo; validated Gemini review with rules fallback; session-owned saved scenarios; durable provider and storage quotas; server input, origin and streamed-size validation; reduced effects and theme support.
+Real local application API proof: recovery 200 with Gemini ready, scenario save 201, saved scenario returned in the session list. Supabase migration applied over TLS to the selected project, RLS enabled. Real REST tests verified own-row access, other-session and no-owner isolation, forged ownership rejection, durable AI quota and test-row cleanup.
 
-## Limits
+Public API proof at 13:27: deterministic recovery 200; Gemini not-configured; scenario save 503. The user added build variables, but Worker runtime secrets still need GEMINI_API_KEY, SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY under Worker Settings -> Variables and Secrets. Do not add the database password. Local success does not establish remote service configuration.
 
-Synthetic dataset only. No airport capacity queue, ferry, diversion, reserve crew or passenger rebooking. Fixed block times, supplied 30-minute aircraft turnaround, explicit 15-minute crew transfer assumption. Boardings are not unique travelers. Recovery is best among evaluated candidates, not globally optimal. Session capability is not an account identity. Automated accessibility does not replace real assistive-technology testing. Some unreachable starter component source remains. No evaluator score, physical-device performance, demo video or external social post is claimed.
+## Scope and limits
 
-## Prior phase evidence
+Implemented closure cascades, linked map/timeline/flight inspection, passenger and crew consequences, cancellation/hold/spare recovery, preserved before/after, preview/apply/undo, fact-bound Gemini review, session-owned saves and durable quotas. Optional-service failure preserves simulation and deterministic recovery.
 
-Phase 1 passed 93 unit tests and 68 browser checks. Phase 2 passed 101 unit tests and 80 browser checks, with desktop/mobile screenshots and no page errors or horizontal overflow. The user explicitly requested a persistent local preview; current preview readiness is checked separately after release testing.
+Synthetic network only. Fixed block times, supplied 30-minute aircraft turnaround, explicit 15-minute crew transfer assumption. No capacity queue, ferry, diversion, reserve crew or rebooking. Boardings and connection passengers are separate measures. Recovery is best among evaluated candidates, not globally optimal. A session capability is not an account identity. Automated accessibility does not establish full assistive-technology coverage. No evaluator score, demo recording or social publication is claimed.
