@@ -25,7 +25,10 @@ jobs:
       - name: Install exactly like Workers Builds (npm 10.9.2, clean install)
         run: npx --yes npm@10.9.2 clean-install --progress=false --no-audit --no-fund
       - name: Build exactly like Workers Builds
-        run: npx opennextjs-cloudflare build
+        run: npm run build
+        env:
+          WORKERS_CI: '1'
+          WORKERS_CI_COMMIT_SHA: ${{ github.sha }}
       - name: Worker size (Workers free plan limit 3 MB gzip)
         run: npx wrangler deploy --dry-run
 

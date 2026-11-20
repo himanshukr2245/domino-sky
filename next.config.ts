@@ -13,6 +13,9 @@ const securityHeaders = [
 ];
 
 const config: NextConfig = {
+  // The dashboard runs Next directly before OpenNext packages with --skipNextBuild.
+  // Its server tracing output must match an OpenNext-managed build.
+  output: process.env.WORKERS_CI || process.env.WORKERS_CI_COMMIT_SHA ? 'standalone' : undefined,
   // Next 16 keeps `next dev` output in .next/dev, separate from `next build` — no distDir split needed.
   poweredByHeader: false,
   productionBrowserSourceMaps: false,                              // protects original TypeScript source code from public inspection
